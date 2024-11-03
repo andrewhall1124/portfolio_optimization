@@ -61,14 +61,14 @@ class Portfolio:
         combined_dict = {**metrics_dict, **weights_dict}
         self.metrics_df = pd.DataFrame(combined_dict, index=[0])
 
-    def optimize(self, method: Optimizer):
+    def optimize(self, method: Optimizer, lam: float = 0.5):
 
         match method:
             case Optimizer.MVO:
                 self.mvo()
 
             case Optimizer.QP:
-                self.qp()
+                self.qp(lam)
 
     def mvo(self):
         self._reset_weights()
@@ -93,9 +93,6 @@ class Portfolio:
 
     def qp(self, lam: float = 0.5):
         self._reset_weights()
-
-        # Define risk-aversion parameter (lambda) for the trade-off
-        lam = 0.5  # Adjust between 0 and 1 to balance risk and return
 
         weights = cp.Variable(self.n)
 
