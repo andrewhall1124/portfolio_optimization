@@ -4,10 +4,20 @@ from enums import Optimizer
 import cvxpy as cp
 import pandas as pd
 
+TRADING_DAYS = 252
+
 
 class Portfolio:
 
-    def __init__(self, names: np.ndarray, prices: np.ndarray, expected_returns: np.ndarray, covariance_matrix: np.ndarray, budget: float) -> None:
+    def __init__(
+        self,
+        names: np.ndarray,
+        prices: np.ndarray,
+        expected_returns: np.ndarray,
+        covariance_matrix: np.ndarray,
+        budget: float,
+        annualize=True,
+    ) -> None:
 
         self.names = names
         self.prices = prices
@@ -17,31 +27,48 @@ class Portfolio:
         self.n = len(self.names)
         self._reset_weights()
 
-    
     def _reset_weights(self):
         self.weights = np.ones(self.n) / self.n
-    
-    def _update_allocations(self):
+
+    def _update_attributes(self):
+        # Allocations
         self.allocations = self.weights * self.budget
         self.shares = self.allocations / self.prices
-        df_dict = {
-            'name': self.names,
-            'weight': self.weights,
-            'allocation': self.allocations,
-            'share': self.shares
-        }
-        self.df = pd.DataFrame(df_dict)
 
+        alloc_dict = {
+            "name": self.names,
+            "weight": self.weights,
+            "allocation": self.allocations,
+            "share": self.shares,
+        }
+        self.alloc_df = pd.DataFrame(alloc_dict)
+
+        # Metrics
+        self.expected_return = self.weights.T @ self.expected_returns * TRADING_DAYS
+        self.standard_devation = np.sqrt(
+            self.weights.T @ self.covariance_matrix @ self.weights
+        ) * np.sqrt(TRADING_DAYS)
+        self.sharpe = self.expected_return / self.standard_devation
+
+        weights_dict = {name: weight for name, weight in zip(self.names, self.weights)}
+
+        metrics_dict = {
+            "expected_return": self.expected_return,
+            "standard_devation": self.standard_devation,
+            "sharpe": self.sharpe,
+        }
+
+        combined_dict = {**metrics_dict, **weights_dict}
+        self.metrics_df = pd.DataFrame(combined_dict, index=[0])
 
     def optimize(self, method: Optimizer):
 
         match method:
             case Optimizer.MVO:
                 self.mvo()
-            
+
             case Optimizer.QP:
                 self.qp()
-    
 
     def mvo(self):
         self._reset_weights()
@@ -62,14 +89,13 @@ class Portfolio:
         )
 
         self.weights = result.x
-        self._update_allocations()
+        self._update_attributes()
 
-    
-    def qp(self, lam=.5):
+    def qp(self, lam: float = 0.5):
         self._reset_weights()
 
         # Define risk-aversion parameter (lambda) for the trade-off
-        lam = .5  # Adjust between 0 and 1 to balance risk and return
+        lam = 0.5  # Adjust between 0 and 1 to balance risk and return
 
         weights = cp.Variable(self.n)
 
@@ -77,7 +103,9 @@ class Portfolio:
         portfolio_variance = cp.quad_form(weights, self.covariance_matrix)
 
         # Objective: maximize a combination of return and negative variance
-        objective = cp.Maximize(lam * (portfolio_return) - (1 - lam) * portfolio_variance)
+        objective = cp.Maximize(
+            lam * (portfolio_return) - (1 - lam) * portfolio_variance
+        )
 
         constraints = [
             cp.sum(weights) == 1,  # sum of weights is 1
@@ -87,9 +115,4 @@ class Portfolio:
         problem.solve()
 
         self.weights = weights.value
-        self._update_allocations()
-
-
-        
-
-    
+        self._update_attributes()

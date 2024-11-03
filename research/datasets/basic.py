@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 import numpy as np
 import yfinance as yf
 import os
@@ -7,6 +7,7 @@ from datasets.config import ROOT
 
 RAW_FILE_PATH = ROOT + "/data/basic.csv"
 CLEAN_FILE_PATH = ROOT + "/data/basic.parquet"
+
 
 class Basic:
     """
@@ -22,29 +23,29 @@ class Basic:
             self.clean()
         self.df = pd.read_parquet(CLEAN_FILE_PATH)
         self.values()
-    
+
     def download(self):
-        tickers = sorted(['AAPL', 'VZ', 'F', 'COKE'])
+        tickers = sorted(["AAPL", "VZ", "F", "COKE"])
         start = "2010-01-01"
         end = "2019-12-31"
-        raw_stocks = yf.download(tickers,start,end).stack().reset_index()
+        raw_stocks = yf.download(tickers, start, end).stack().reset_index()
         raw_stocks.to_csv(RAW_FILE_PATH, index=False)
 
     def clean(self):
         df = pd.read_csv(RAW_FILE_PATH)
 
         # Rename olumns
-        df = df.rename(columns={x:x.replace(" ","_").lower() for x in df.columns})
+        df = df.rename(columns={x: x.replace(" ", "_").lower() for x in df.columns})
 
         # Keep columns
-        keep_columns = ['date', 'ticker', 'close', 'adj_close']
+        keep_columns = ["date", "ticker", "close", "adj_close"]
         df = df[keep_columns]
 
         # Create ret column
-        df['ret'] = df.groupby('ticker')['adj_close'].pct_change()
+        df["ret"] = df.groupby("ticker")["adj_close"].pct_change()
 
         # Sort dataframe
-        df = df.sort_values(by=['ticker','date'])
+        df = df.sort_values(by=["ticker", "date"])
 
         # Reindex
         df = df.reset_index(drop=True)
@@ -54,12 +55,12 @@ class Basic:
 
     def values(self):
         df = pd.read_parquet(CLEAN_FILE_PATH)
-        self.prices = df.groupby('ticker').agg({'close': 'last'}).to_numpy().T[0]
-        self.names = df['ticker'].unique()
-        self.expected_returns = df.groupby("ticker")['ret'].mean().to_numpy()
-        self.covariance_matrix = df.pivot(index='date', values='ret', columns='ticker').fillna(0).cov().to_numpy()
-
-
-
-
-
+        self.prices = df.groupby("ticker").agg({"close": "last"}).to_numpy().T[0]
+        self.names = df["ticker"].unique()
+        self.expected_returns = df.groupby("ticker")["ret"].mean().to_numpy()
+        self.covariance_matrix = (
+            df.pivot(index="date", values="ret", columns="ticker")
+            .fillna(0)
+            .cov()
+            .to_numpy()
+        )
