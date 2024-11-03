@@ -1,8 +1,10 @@
 import numpy as np
-from scipy.optimize import minimize
-from enums import Optimizer
-import cvxpy as cp
 import pandas as pd
+import cvxpy as cp
+from scipy.optimize import minimize
+
+from research.enums import Optimizer
+
 
 TRADING_DAYS = 252
 

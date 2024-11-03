@@ -1,7 +1,8 @@
-from portfolio import Portfolio
-from enums import Optimizer
-from datasets import Basic
 import pandas as pd
+
+from research.portfolio import Portfolio
+from research.enums import Optimizer
+from research.datasets import Basic
 
 data = Basic()
 optimizers = [Optimizer.MVO, Optimizer.QP]

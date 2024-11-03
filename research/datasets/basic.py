@@ -3,10 +3,11 @@ import numpy as np
 import yfinance as yf
 import os
 import pandas as pd
-from datasets.config import ROOT
+from .config import ROOT
 
-RAW_FILE_PATH = ROOT + "/data/basic.csv"
-CLEAN_FILE_PATH = ROOT + "/data/basic.parquet"
+DATA_DIR = ROOT + "/data"
+RAW_FILE_PATH = DATA_DIR + "/basic.csv"
+CLEAN_FILE_PATH = DATA_DIR + "/basic.parquet"
 
 
 class Basic:
@@ -15,6 +16,9 @@ class Basic:
     """
 
     def __init__(self) -> None:
+        if not os.path.exists(ROOT + "/data"):
+            os.makedirs(ROOT + "/data")
+
         if not os.path.exists(CLEAN_FILE_PATH):
 
             if not os.path.exists(RAW_FILE_PATH):
