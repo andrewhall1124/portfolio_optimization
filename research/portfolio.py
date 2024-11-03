@@ -6,9 +6,6 @@ from scipy.optimize import minimize
 from research.enums import Optimizer
 
 
-TRADING_DAYS = 252
-
-
 class Portfolio:
 
     def __init__(
@@ -18,7 +15,7 @@ class Portfolio:
         expected_returns: np.ndarray,
         covariance_matrix: np.ndarray,
         budget: float,
-        annualize=True,
+        annualize: float = 252,
     ) -> None:
 
         self.names = names
@@ -26,6 +23,7 @@ class Portfolio:
         self.expected_returns = expected_returns
         self.covariance_matrix = covariance_matrix
         self.budget = budget
+        self.annualize = annualize
         self.n = len(self.names)
         self._reset_weights()
 
@@ -46,10 +44,10 @@ class Portfolio:
         self.alloc_df = pd.DataFrame(alloc_dict)
 
         # Metrics
-        self.expected_return = self.weights.T @ self.expected_returns * TRADING_DAYS
+        self.expected_return = self.weights.T @ self.expected_returns * self.annualize
         self.standard_devation = np.sqrt(
             self.weights.T @ self.covariance_matrix @ self.weights
-        ) * np.sqrt(TRADING_DAYS)
+        ) * np.sqrt(self.annualize)
         self.sharpe = self.expected_return / self.standard_devation
 
         weights_dict = {name: weight for name, weight in zip(self.names, self.weights)}
