@@ -18,11 +18,11 @@ results_list = []
 for lam in lams:
     portfolio.optimize(method=Optimizer.QP, lam=lam)
     result = portfolio.metrics_df
-    result["lambda"] = round(lam,4)
+    result["lambda"] = round(lam, 4)
     new_order = ["lambda"] + [col for col in result.columns[:-1]]
     result = result[new_order]
     results_list.append(result)
 
 results = pd.concat(results_list)
 
-print(tabulate(results, headers='keys', tablefmt='psql'))
+print(tabulate(results, headers="keys", tablefmt="psql"))

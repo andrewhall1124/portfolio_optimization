@@ -77,8 +77,8 @@ class Portfolio:
         weights_dict = {name: weight for name, weight in zip(self.names, self.weights)}
 
         metrics_dict = {
-            "expected_return": round(expected_return * 100,4),
-            "standard_devation": round(standard_devation * 100,4),
+            "expected_return": round(expected_return * 100, 4),
+            "standard_devation": round(standard_devation * 100, 4),
             "sharpe": round(sharpe, 4),
             "value": int(self.value),
             "deficit": int(self.budget - self.value),
