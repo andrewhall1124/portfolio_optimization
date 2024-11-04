@@ -24,4 +24,4 @@ for method in methods:
 
 results = pd.concat(results_list)
 
-print(tabulate(results, headers="keys", tablefmt="psql"))
+print(tabulate(results, headers="keys", tablefmt="simple_outline", showindex=False))
