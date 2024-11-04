@@ -1,4 +1,5 @@
 import pandas as pd
+from tabulate import tabulate
 
 from research.portfolio import Portfolio
 from research.enums import Optimizer
@@ -23,4 +24,4 @@ for optimizer in optimizers:
 
 results = pd.concat(results_list)
 
-print(results)
+print(tabulate(results, headers='keys', tablefmt='psql'))
