@@ -1,11 +1,10 @@
 from enum import Enum
 
-
 class Optimizer(Enum):
     MVO = "mvo"
-    CEIL = "ceil"
     QP = "qp"
-
+    MIQP = "miqp"
+    GA = "ga"
 
 class Rounding(Enum):
     CEIL = "ceil"

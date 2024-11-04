@@ -96,7 +96,16 @@ class Portfolio:
             case Optimizer.QP:
                 self.qp(lam)
 
-    def mvo(self, rounding: Rounding = None):
+            case Optimizer.MIQP:
+                self.miqp(lam)
+            
+            case Optimizer.GA:
+                self.ga()
+        
+        self._update_allocations(rounding)
+        self._update_attributes()
+
+    def mvo(self):
         self._reset_weights()
 
         constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
@@ -115,10 +124,8 @@ class Portfolio:
         )
 
         self.weights = result.x
-        self._update_allocations(rounding)
-        self._update_attributes()
 
-    def qp(self, lam: float = 0.5, rounding: Rounding = None):
+    def qp(self, lam: float = 0.5):
         self._reset_weights()
 
         weights = cp.Variable(self.n)
@@ -126,18 +133,21 @@ class Portfolio:
         portfolio_return = self.expected_returns @ self.weights
         portfolio_variance = cp.quad_form(weights, self.covariance_matrix)
 
-        # Objective: maximize a combination of return and negative variance
         objective = cp.Maximize(
             lam * (portfolio_return) - (1 - lam) * portfolio_variance
         )
 
         constraints = [
-            cp.sum(weights) == 1,  # sum of weights is 1
+            cp.sum(weights) == 1,
         ]
 
         problem = cp.Problem(objective, constraints)
         problem.solve()
 
         self.weights = weights.value
-        self._update_allocations(rounding)
-        self._update_attributes()
+
+    def miqp(self, lam: float = .5):
+        pass
+    
+    def ga(self):
+        pass

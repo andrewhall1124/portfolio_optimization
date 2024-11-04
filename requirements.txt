@@ -5,6 +5,7 @@ ipykernel
 matplotlib
 seaborn
 cvxpy
+cvxopt
 scipy
 pyarrow
 tabulate
