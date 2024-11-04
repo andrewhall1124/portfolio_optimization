@@ -24,11 +24,12 @@ class Portfolio:
         self.covariance_matrix = covariance_matrix
         self.budget = budget
         self.annualize = annualize
-        self.n = len(self.names)
+        self.n_assets = len(self.names)
+
         self._reset_weights()
 
     def _reset_weights(self):
-        self.weights = np.ones(self.n) / self.n
+        self.weights = np.ones(self.n_assets) / self.n_assets
         self._update_allocations()
 
     def _update_allocations(self, rounding: Rounding = None):
@@ -91,7 +92,7 @@ class Portfolio:
 
         match method:
             case Optimizer.MVO:
-                self.mvo(rounding)
+                self.mvo()
 
             case Optimizer.QP:
                 self.qp(lam)
@@ -128,7 +129,7 @@ class Portfolio:
     def qp(self, lam: float = 0.5):
         self._reset_weights()
 
-        weights = cp.Variable(self.n)
+        weights = cp.Variable(self.n_assets)
 
         portfolio_return = self.expected_returns @ self.weights
         portfolio_variance = cp.quad_form(weights, self.covariance_matrix)
