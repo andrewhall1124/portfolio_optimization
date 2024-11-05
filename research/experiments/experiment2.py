@@ -11,15 +11,15 @@ budget = 1e6
 portfolio = Portfolio(
     data.names, data.prices, data.expected_returns, data.covariance_matrix, budget
 )
-lams = np.linspace(0, 1, 20)
+gammas = np.linspace(0, 1, 20)
 
 results_list = []
 
-for lam in lams:
-    portfolio.optimize(method=Optimizer.QP, lam=lam)
+for gamma in gammas:
+    portfolio.optimize(method=Optimizer.QP, gamma=gamma)
     result = portfolio.metrics_df
-    result["lambda"] = round(lam, 4)
-    new_order = ["lambda"] + [col for col in result.columns[:-1]]
+    result["gamma"] = round(gamma, 4)
+    new_order = ["gamma"] + [col for col in result.columns[:-1]]
     result = result[new_order]
     results_list.append(result)
 

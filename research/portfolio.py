@@ -75,30 +75,30 @@ class Portfolio:
         sharpe = expected_return / standard_devation
 
         # Metrics Dataframe
-        weights_dict = {name: weight for name, weight in zip(self.names, self.weights)}
+        weights_dict = {name: round(weight,4) for name, weight in zip(self.names, self.weights)}
 
         metrics_dict = {
             "expected_return": round(expected_return * 100, 4),
             "standard_devation": round(standard_devation * 100, 4),
             "sharpe": round(sharpe, 4),
-            "value": int(self.value),
+            "value": self.value,
             "deficit": int(self.budget - self.value),
         }
 
         combined_dict = {**metrics_dict, **weights_dict}
         self.metrics_df = pd.DataFrame(combined_dict, index=[0])
 
-    def optimize(self, method: Optimizer, lam: float = 0.5, rounding: Rounding = None):
+    def optimize(self, method: Optimizer, gamma: float = 0.5, rounding: Rounding = None):
 
         match method:
             case Optimizer.MVO:
                 self.mvo()
 
             case Optimizer.QP:
-                self.qp(lam)
+                self.qp(gamma)
 
             case Optimizer.MIQP:
-                self.miqp(lam)
+                self.miqp(gamma)
             
             case Optimizer.GA:
                 self.ga()
@@ -126,20 +126,22 @@ class Portfolio:
 
         self.weights = result.x
 
-    def qp(self, lam: float = 0.5):
+    def qp(self, gamma: float = 0.5):
         self._reset_weights()
 
         weights = cp.Variable(self.n_assets)
 
-        portfolio_return = self.expected_returns @ self.weights
+        portfolio_return = self.expected_returns @ weights
         portfolio_variance = cp.quad_form(weights, self.covariance_matrix)
 
         objective = cp.Maximize(
-            lam * (portfolio_return) - (1 - lam) * portfolio_variance
+            portfolio_return - gamma * portfolio_variance
         )
 
         constraints = [
             cp.sum(weights) == 1,
+            weights >= -1,
+            weights <= 1  
         ]
 
         problem = cp.Problem(objective, constraints)
