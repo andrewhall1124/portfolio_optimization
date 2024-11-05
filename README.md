@@ -1,4 +1,4 @@
-# Pairs Trading Research Repository
+# Portfolio Optimization Research Repository
 Authored by Andrew Hall and Seth Peterson
 
 ## Getting Started
