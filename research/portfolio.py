@@ -77,11 +77,10 @@ class Portfolio:
 
         # Metrics Dataframe
         weights_dict = {
-            f"{name}_W": round(weight, 4)
-            for name, weight in zip(self.names, self.weights)
+            f"{name}_W": weight for name, weight in zip(self.names, self.weights)
         }
         shares_dict = {
-            f"{name}_S": round(share, 4) for name, share in zip(self.names, self.shares)
+            f"{name}_S": share for name, share in zip(self.names, self.shares)
         }
 
         metrics_dict = {

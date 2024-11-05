@@ -13,6 +13,7 @@ portfolio = Portfolio(
     data.names, data.prices, data.expected_returns, data.covariance_matrix, budget
 )
 
+
 def optimize_portfolio(optimizer: Optimizer, method: Rounding = None):
     portfolio.optimize(method=optimizer, rounding=method)
     result = portfolio.metrics_df(include_shares=True)
@@ -21,6 +22,7 @@ def optimize_portfolio(optimizer: Optimizer, method: Rounding = None):
     new_order = ["method"] + [col for col in result.columns[:-1]]
 
     return result[new_order]
+
 
 results_list = []
 

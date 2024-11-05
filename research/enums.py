@@ -13,3 +13,8 @@ class Rounding(Enum):
     CEIL = "ceil"
     FLOOR = "floor"
     MID = "mid"
+
+
+class ChartType(Enum):
+    SCATTER = "scatter"
+    LINE = "line"
