@@ -219,7 +219,7 @@ class Portfolio:
             return (portfolio_return / portfolio_variance) * annual_factor
 
         # Set precision and other parameters
-        precision = 4
+        precision = 1e-4
         step_size = 1
         gamma_low, gamma_high = 0, 20
         max_iterations = 20
@@ -230,15 +230,9 @@ class Portfolio:
         cur_sharpe = 0
 
         iterations = 0
-
-        # Run binary search on the sharpe ratio curve. Move in the direction of the higher sharpe
-        while (
-            round(cur_sharpe - prev_sharpe, precision) != 0
-            and iterations < max_iterations
-        ):
-
+        # Run binary search on the sharpe ratio curve
+        while iterations < max_iterations:
             gamma_mid = (gamma_low + gamma_high) / 2
-            # print(f"Iteration: {iterations}, gamma range: [{gamma_low}, {gamma_high}], sharpe: {cur_sharpe}")
 
             left_weights = self.qp(gamma_mid - step_size)
             right_weights = self.qp(gamma_mid + step_size)
@@ -246,7 +240,7 @@ class Portfolio:
             left_sharpe = calculate_sharpe(left_weights)
             right_sharpe = calculate_sharpe(right_weights)
 
-            # Move in the direction with the higher sharpe ratio
+            # Move in the direction with the higher Sharpe ratio
             if left_sharpe > right_sharpe:
                 gamma_high = gamma_mid
                 cur_weights = left_weights
@@ -254,13 +248,17 @@ class Portfolio:
                 gamma_low = gamma_mid
                 cur_weights = right_weights
 
-            # Update current Sharpe and weights for the next iteration
+            # Update current Sharpe and check for convergence
             prev_sharpe = cur_sharpe
             cur_sharpe = calculate_sharpe(cur_weights)
 
+            # Early exit
+            if abs(cur_sharpe - prev_sharpe) < precision:
+                break
+
             iterations += 1
 
-        self.weights = cur_weights
+            self.weights = cur_weights
 
     def iter_miqp(self):
         pass
