@@ -7,6 +7,8 @@ class Optimizer(Enum):
     TWO_STAGE = "two_stage"
     MIQP = "miqp"
     GA = "ga"
+    ITER_QP = "iter_qp"
+    ITER_MIQP = "iter_miqp"
 
 
 class Rounding(Enum):

@@ -100,7 +100,10 @@ class Portfolio:
         return pd.DataFrame(combined_dict, index=[0])
 
     def optimize(
-        self, method: Optimizer, gamma: float = 0.5, rounding: Rounding = None
+        self,
+        method: Optimizer,
+        gamma: float = 0.5,
+        rounding: Rounding = None,
     ):
 
         match method:
@@ -118,6 +121,12 @@ class Portfolio:
 
             case Optimizer.GA:
                 self.ga()
+
+            case Optimizer.ITER_QP:
+                self.iter_qp()
+
+            case Optimizer.ITER_MIQP:
+                self.iter_miqp()
 
         self._update_allocations(rounding)
 
@@ -158,6 +167,8 @@ class Portfolio:
 
         self.weights = weights.value
 
+        return weights.value
+
     def two_stage(self):
         self.mvo()
 
@@ -197,4 +208,59 @@ class Portfolio:
         self.weights = shares.value * self.prices / self.budget
 
     def ga(self):
+        pass
+
+    def iter_qp(self):
+
+        def calculate_sharpe(weights: np.ndarray) -> float:
+            portfolio_return = self.expected_returns @ weights
+            portfolio_variance = np.sqrt(weights @ self.covariance_matrix @ weights)
+            annual_factor = self.annualize / np.sqrt(self.annualize)
+            return (portfolio_return / portfolio_variance) * annual_factor
+
+        # Set precision and other parameters
+        precision = 4
+        step_size = 1
+        gamma_low, gamma_high = 0, 20
+        max_iterations = 20
+
+        # Initial solution
+        prev_sharpe = -np.inf
+        cur_weights = None
+        cur_sharpe = 0
+
+        iterations = 0
+
+        # Run binary search on the sharpe ratio curve. Move in the direction of the higher sharpe
+        while (
+            round(cur_sharpe - prev_sharpe, precision) != 0
+            and iterations < max_iterations
+        ):
+
+            gamma_mid = (gamma_low + gamma_high) / 2
+            # print(f"Iteration: {iterations}, gamma range: [{gamma_low}, {gamma_high}], sharpe: {cur_sharpe}")
+
+            left_weights = self.qp(gamma_mid - step_size)
+            right_weights = self.qp(gamma_mid + step_size)
+
+            left_sharpe = calculate_sharpe(left_weights)
+            right_sharpe = calculate_sharpe(right_weights)
+
+            # Move in the direction with the higher sharpe ratio
+            if left_sharpe > right_sharpe:
+                gamma_high = gamma_mid
+                cur_weights = left_weights
+            else:
+                gamma_low = gamma_mid
+                cur_weights = right_weights
+
+            # Update current Sharpe and weights for the next iteration
+            prev_sharpe = cur_sharpe
+            cur_sharpe = calculate_sharpe(cur_weights)
+
+            iterations += 1
+
+        self.weights = cur_weights
+
+    def iter_miqp(self):
         pass
