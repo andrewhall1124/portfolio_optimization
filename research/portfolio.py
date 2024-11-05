@@ -27,7 +27,7 @@ class Portfolio:
         self.n_assets = len(self.names)
 
         self._reset_weights()
-    
+
     def _sharpe(self, weights: np.ndarray):
         portfolio_return = self.expected_returns @ weights
         portfolio_variance = np.sqrt(weights @ self.covariance_matrix @ weights)
@@ -111,6 +111,7 @@ class Portfolio:
         gamma: float = 0.5,
         rounding: Rounding = None,
     ):
+        self._reset_weights()
 
         match method:
             case Optimizer.MVO:
@@ -137,12 +138,11 @@ class Portfolio:
         self._update_allocations(rounding)
 
     def mvo(self):
-        self._reset_weights()
 
         constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
 
         def negative_sharpe_ratio(weights):
-            return - self._sharpe(weights)
+            return -self._sharpe(weights)
 
         result = minimize(
             fun=negative_sharpe_ratio,
@@ -156,7 +156,6 @@ class Portfolio:
         return result.x
 
     def qp(self, gamma: float = 0.5):
-        self._reset_weights()
 
         weights = cp.Variable(self.n_assets)
 
@@ -185,7 +184,11 @@ class Portfolio:
 
         objective = cp.Minimize(cp.sum_squares(optimal_weights - weights))
 
-        constraints = [cp.sum(weights) <= 1, weights >= -1, weights <= 1]
+        constraints = [
+            cp.sum(cp.multiply(shares, self.prices)) <= self.budget,
+            weights >= -1,
+            weights <= 1,
+        ]
 
         problem = cp.Problem(objective, constraints)
 
@@ -206,7 +209,11 @@ class Portfolio:
 
         objective = cp.Maximize(portfolio_return - gamma * portfolio_variance)
 
-        constraints = [cp.sum(weights) <= 1, weights >= -1, weights <= 1]
+        constraints = [
+            cp.sum(cp.multiply(shares, self.prices)) <= self.budget,
+            weights >= -1,
+            weights <= 1,
+        ]
 
         problem = cp.Problem(objective, constraints)
 
