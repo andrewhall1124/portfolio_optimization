@@ -222,8 +222,7 @@ class Portfolio:
     def iter_qp(self):
 
         # Set precision and other parameters
-        precision = 1e-4
-        step_size = 1
+        precision = 1e-6
         gamma_low, gamma_high = 0, 20
         max_iterations = 20
 
@@ -237,8 +236,8 @@ class Portfolio:
         while iterations < max_iterations:
             gamma_mid = (gamma_low + gamma_high) / 2
 
-            left_weights = self.qp(gamma_mid - step_size)
-            right_weights = self.qp(gamma_mid + step_size)
+            left_weights = self.qp(gamma_mid - precision)
+            right_weights = self.qp(gamma_mid + precision)
 
             left_sharpe = self._sharpe(left_weights)
             right_sharpe = self._sharpe(right_weights)
@@ -260,16 +259,15 @@ class Portfolio:
                 break
 
             iterations += 1
+        print("ITERATIONS", iterations)
+        self.weights = cur_weights
 
-            self.weights = cur_weights
-
-            return cur_weights
+        return cur_weights
 
     def iter_miqp(self):
 
         # Set precision and other parameters
-        precision = 1e-10
-        step_size = 1
+        precision = 1e-6
         gamma_low, gamma_high = 0, 20
         max_iterations = 20
 
@@ -284,10 +282,10 @@ class Portfolio:
             gamma_mid = (gamma_low + gamma_high) / 2
 
             # self._update_allocations()
-            # print(f"Iteration: {iterations}, gamma range: [{gamma_low}, {gamma_high}], sharpe: {cur_sharpe}, deficit: {self.budget - self.value}")
+            # print(f"Iteration: {iterations}, gamma range: [{gamma_low}, {gamma_high}], sharpe: {cur_sharpe}")
 
-            left_weights = self.miqp(gamma_mid - step_size)
-            right_weights = self.miqp(gamma_mid + step_size)
+            left_weights = self.miqp(gamma_mid - precision)
+            right_weights = self.miqp(gamma_mid + precision)
 
             left_sharpe = self._sharpe(left_weights)
             right_sharpe = self._sharpe(right_weights)
@@ -310,4 +308,4 @@ class Portfolio:
 
             iterations += 1
 
-            self.weights = cur_weights
+        self.weights = cur_weights
