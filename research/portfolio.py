@@ -27,6 +27,12 @@ class Portfolio:
         self.n_assets = len(self.names)
 
         self._reset_weights()
+    
+    def _sharpe(self, weights: np.ndarray):
+        portfolio_return = self.expected_returns @ weights
+        portfolio_variance = np.sqrt(weights @ self.covariance_matrix @ weights)
+        annual_factor = self.annualize / np.sqrt(self.annualize)
+        return (portfolio_return / portfolio_variance) * annual_factor
 
     def _reset_weights(self):
         self.weights = np.ones(self.n_assets) / self.n_assets
@@ -135,20 +141,19 @@ class Portfolio:
 
         constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
 
-        def negative_sharpe_ratio(weights, expected_returns, cov_matrix):
-            portfolio_return = weights @ expected_returns
-            portfolio_std_dev = np.sqrt(weights @ cov_matrix @ weights)
-            return -portfolio_return / portfolio_std_dev
+        def negative_sharpe_ratio(weights):
+            return - self._sharpe(weights)
 
         result = minimize(
-            negative_sharpe_ratio,
-            self.weights,
-            args=(self.expected_returns, self.covariance_matrix),
+            fun=negative_sharpe_ratio,
+            x0=self.weights,
             method="SLSQP",
             constraints=constraints,
         )
 
         self.weights = result.x
+
+        return result.x
 
     def qp(self, gamma: float = 0.5):
         self._reset_weights()
@@ -188,6 +193,8 @@ class Portfolio:
 
         self.weights = shares.value * self.prices / self.budget
 
+        return shares.value * self.prices / self.budget
+
     def miqp(self, gamma: float = 0.5):
 
         shares = cp.Variable(self.n_assets, integer=True)
@@ -207,16 +214,12 @@ class Portfolio:
 
         self.weights = shares.value * self.prices / self.budget
 
+        return shares.value * self.prices / self.budget
+
     def ga(self):
         pass
 
     def iter_qp(self):
-
-        def calculate_sharpe(weights: np.ndarray) -> float:
-            portfolio_return = self.expected_returns @ weights
-            portfolio_variance = np.sqrt(weights @ self.covariance_matrix @ weights)
-            annual_factor = self.annualize / np.sqrt(self.annualize)
-            return (portfolio_return / portfolio_variance) * annual_factor
 
         # Set precision and other parameters
         precision = 1e-4
@@ -237,8 +240,8 @@ class Portfolio:
             left_weights = self.qp(gamma_mid - step_size)
             right_weights = self.qp(gamma_mid + step_size)
 
-            left_sharpe = calculate_sharpe(left_weights)
-            right_sharpe = calculate_sharpe(right_weights)
+            left_sharpe = self._sharpe(left_weights)
+            right_sharpe = self._sharpe(right_weights)
 
             # Move in the direction with the higher Sharpe ratio
             if left_sharpe > right_sharpe:
@@ -250,7 +253,7 @@ class Portfolio:
 
             # Update current Sharpe and check for convergence
             prev_sharpe = cur_sharpe
-            cur_sharpe = calculate_sharpe(cur_weights)
+            cur_sharpe = self._sharpe(cur_weights)
 
             # Early exit
             if abs(cur_sharpe - prev_sharpe) < precision:
@@ -260,5 +263,51 @@ class Portfolio:
 
             self.weights = cur_weights
 
+            return cur_weights
+
     def iter_miqp(self):
-        pass
+
+        # Set precision and other parameters
+        precision = 1e-10
+        step_size = 1
+        gamma_low, gamma_high = 0, 20
+        max_iterations = 20
+
+        # Initial solution
+        prev_sharpe = -np.inf
+        cur_weights = None
+        cur_sharpe = 0
+
+        iterations = 0
+        # Run binary search on the sharpe ratio curve
+        while iterations < max_iterations:
+            gamma_mid = (gamma_low + gamma_high) / 2
+
+            # self._update_allocations()
+            # print(f"Iteration: {iterations}, gamma range: [{gamma_low}, {gamma_high}], sharpe: {cur_sharpe}, deficit: {self.budget - self.value}")
+
+            left_weights = self.miqp(gamma_mid - step_size)
+            right_weights = self.miqp(gamma_mid + step_size)
+
+            left_sharpe = self._sharpe(left_weights)
+            right_sharpe = self._sharpe(right_weights)
+
+            # Move in the direction with the higher Sharpe ratio
+            if left_sharpe > right_sharpe:
+                gamma_high = gamma_mid
+                cur_weights = left_weights
+            else:
+                gamma_low = gamma_mid
+                cur_weights = right_weights
+
+            # Update current Sharpe and check for convergence
+            prev_sharpe = cur_sharpe
+            cur_sharpe = self._sharpe(cur_weights)
+
+            # Early exit
+            if abs(cur_sharpe - prev_sharpe) < precision:
+                break
+
+            iterations += 1
+
+            self.weights = cur_weights
