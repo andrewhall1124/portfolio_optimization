@@ -9,3 +9,4 @@ cvxopt
 scipy
 pyarrow
 tabulate
+pyscipopt

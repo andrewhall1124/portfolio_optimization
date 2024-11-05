@@ -75,7 +75,8 @@ class Portfolio:
         sharpe = expected_return / standard_devation
 
         # Metrics Dataframe
-        weights_dict = {name: round(weight,4) for name, weight in zip(self.names, self.weights)}
+        # weights_dict = {f"{name}_W" : round(weight,4) for name, weight in zip(self.names, self.weights)}
+        shares_dict = {f"{name}_S": round(share,4) for name, share in zip(self.names, self.shares)}
 
         metrics_dict = {
             "expected_return": round(expected_return * 100, 4),
@@ -85,7 +86,7 @@ class Portfolio:
             "deficit": int(self.budget - self.value),
         }
 
-        combined_dict = {**metrics_dict, **weights_dict}
+        combined_dict = {**metrics_dict, **shares_dict} #, **weights_dict}
         self.metrics_df = pd.DataFrame(combined_dict, index=[0])
 
     def optimize(self, method: Optimizer, gamma: float = 0.5, rounding: Rounding = None):
@@ -96,6 +97,9 @@ class Portfolio:
 
             case Optimizer.QP:
                 self.qp(gamma)
+            
+            case Optimizer.TWO_STAGE:
+                self.two_stage()
 
             case Optimizer.MIQP:
                 self.miqp(gamma)
@@ -148,9 +152,55 @@ class Portfolio:
         problem.solve()
 
         self.weights = weights.value
-
-    def miqp(self, lam: float = .5):
-        pass
     
+    def two_stage(self):
+        self.mvo()
+        
+        optimal_weights = self.weights
+
+        shares = cp.Variable(self.n_assets, integer=True)
+        scale = self.prices / self.budget
+        weights = cp.multiply(shares, scale)
+        
+        objective = cp.Minimize(cp.sum_squares(optimal_weights - weights))
+
+        constraints = [
+            cp.sum(weights) <= 1,
+            weights >= -1,
+            weights <= 1  
+        ]
+
+        problem = cp.Problem(objective, constraints)
+
+        problem.solve(solver=cp.SCIP)
+
+        self.weights = (shares.value * self.prices / self.budget)
+
+
+    def miqp(self, gamma: float = .5):
+
+        shares = cp.Variable(self.n_assets, integer=True)
+        scale = self.prices / self.budget
+        weights = cp.multiply(shares, scale)
+
+        portfolio_return = cp.sum(cp.multiply(self.expected_returns,weights))
+        portfolio_variance = cp.quad_form(weights, self.covariance_matrix)
+
+        objective = cp.Maximize(
+            portfolio_return - gamma * portfolio_variance
+        )
+
+        constraints = [
+            cp.sum(weights) <= 1,
+            weights >= -1,
+            weights <= 1
+        ]
+
+        problem = cp.Problem(objective, constraints)
+
+        problem.solve(solver=cp.SCIP)
+
+        self.weights = (shares.value * self.prices / self.budget)   
+
     def ga(self):
         pass

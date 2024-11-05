@@ -22,6 +22,13 @@ for method in methods:
     result = result[new_order]
     results_list.append(result)
 
+portfolio.optimize(method=Optimizer.TWO_STAGE)
+result = portfolio.metrics_df
+result["method"] = "two_stage"
+new_order = ["method"] + [col for col in result.columns[:-1]]
+result = result[new_order]
+results_list.append(result)
+
 results = pd.concat(results_list)
 
 print(tabulate(results, headers="keys", tablefmt="simple_outline", showindex=False))
