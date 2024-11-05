@@ -259,7 +259,6 @@ class Portfolio:
                 break
 
             iterations += 1
-        print("ITERATIONS", iterations)
         self.weights = cur_weights
 
         return cur_weights
