@@ -108,7 +108,7 @@ class Portfolio:
     def optimize(
         self,
         method: Optimizer,
-        gamma: float = 0.5,
+        gamma: float = 2,
         rounding: Rounding = None,
     ):
         self._reset_weights()
@@ -155,18 +155,19 @@ class Portfolio:
 
         return result.x
 
-    def qp(self, gamma: float = 0.5):
+    def qp(self, gamma: float):
 
+        if gamma == 0:
+            raise "Cannot optimize with gamma of 0. Unbounded"
+        
         weights = cp.Variable(self.n_assets)
 
-        portfolio_return = self.expected_returns @ weights
-        portfolio_variance = cp.quad_form(weights, self.covariance_matrix)
-
+        portfolio_return = weights .T @ self.expected_returns
+        portfolio_variance = weights.T @ self.covariance_matrix @ weights
+        
         objective = cp.Maximize(portfolio_return - gamma * portfolio_variance)
 
-        constraints = [cp.sum(weights) == 1, weights >= -1, weights <= 1]
-
-        problem = cp.Problem(objective, constraints)
+        problem = cp.Problem(objective)
         problem.solve()
 
         self.weights = weights.value
@@ -186,8 +187,6 @@ class Portfolio:
 
         constraints = [
             cp.sum(cp.multiply(shares, self.prices)) <= self.budget,
-            weights >= -1,
-            weights <= 1,
         ]
 
         problem = cp.Problem(objective, constraints)
@@ -198,7 +197,7 @@ class Portfolio:
 
         return shares.value * self.prices / self.budget
 
-    def miqp(self, gamma: float = 0.5):
+    def miqp(self, gamma: float):
 
         shares = cp.Variable(self.n_assets, integer=True)
         scale = self.prices / self.budget
@@ -211,8 +210,6 @@ class Portfolio:
 
         constraints = [
             cp.sum(cp.multiply(shares, self.prices)) <= self.budget,
-            weights >= -1,
-            weights <= 1,
         ]
 
         problem = cp.Problem(objective, constraints)

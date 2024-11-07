@@ -11,13 +11,14 @@ budget = 1e6
 portfolio = Portfolio(
     data.names, data.prices, data.expected_returns, data.covariance_matrix, budget
 )
-gammas = np.linspace(0, 20, 41)
+gammas = np.linspace(1, 20, 20)
 
 results_list = []
 
 for gamma in gammas:
     portfolio.optimize(method=Optimizer.QP, gamma=gamma)
     result = portfolio.metrics_df(include_weights=True)
+    result['sum_weights'] = sum(portfolio.weights)
     result["gamma"] = gamma
     new_order = ["gamma"] + [col for col in result.columns[:-1]]
     result = result[new_order]
