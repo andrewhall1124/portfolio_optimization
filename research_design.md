@@ -43,3 +43,10 @@ Portfolios constructed with Integer Quadratic Programming (IQP) under the whole-
 #### 5. Rebalancing Strategies Analysis
 - Implement periodic rebalancing using the IQP model.
 - Compare different rebalancing frequencies (e.g., monthly, quarterly, annually).
+
+
+## Experiment Labels
+
+1. Table of optimization methods and resulting heuristics
+2. Illustration of mean variance utility function optimization
+3. Illustration of rounding methodologies vs. whole share constrained methods

@@ -155,22 +155,24 @@ class Portfolio:
 
         return result.x
 
-    def qp(self, gamma: float):
+    def qp(self, gamma: float, scale_weights=True):
 
         if gamma == 0:
             raise "Cannot optimize with gamma of 0. Unbounded"
-        
+
         weights = cp.Variable(self.n_assets)
 
-        portfolio_return = weights .T @ self.expected_returns
+        portfolio_return = weights.T @ self.expected_returns
         portfolio_variance = weights.T @ self.covariance_matrix @ weights
-        
+
         objective = cp.Maximize(portfolio_return - gamma * portfolio_variance)
 
         problem = cp.Problem(objective)
         problem.solve()
 
-        self.weights = weights.value
+        total_value = np.sum(weights.value)
+
+        self.weights = weights.value / total_value if scale_weights else weights.value
 
         return weights.value
 
