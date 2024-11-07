@@ -5,13 +5,14 @@ import cvxpy as cp
 
 def two_stage_slsqp(data: AssetData, weights:np.ndarray[float], budget: float):
     optimal_weights = slsqp(data, weights)
+    optimal_values = optimal_weights * budget
+
     n_assets = len(data.names)
 
     shares = cp.Variable(n_assets, integer=True)
-    scale = data.prices / budget
-    weights = cp.multiply(shares, scale)
+    values = cp.multiply(shares, data.prices)
 
-    objective = cp.Minimize(cp.sum_squares(optimal_weights - weights))
+    objective = cp.Minimize(cp.sum_squares(optimal_values - values))
 
     constraints = [
         cp.sum(cp.multiply(shares, data.prices)) <= budget,
@@ -19,7 +20,7 @@ def two_stage_slsqp(data: AssetData, weights:np.ndarray[float], budget: float):
 
     problem = cp.Problem(objective, constraints)
 
-    problem.solve(solver=cp.SCIP)
+    problem.solve(solver=cp.GUROBI)
 
     weights = shares.value * data.prices / budget
     
