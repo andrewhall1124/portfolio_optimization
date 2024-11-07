@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Optimizer(Enum):
-    MVO = "mvo"
+    SLSQP = "slsqp"
     QP = "qp"
     TWO_STAGE = "two_stage"
     MIQP = "miqp"

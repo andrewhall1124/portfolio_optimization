@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from .config import ROOT
 
+from research.interfaces import AssetData
+
 DATA_DIR = ROOT + "/data"
 RAW_FILE_PATH = DATA_DIR + "/basic.csv"
 CLEAN_FILE_PATH = DATA_DIR + "/basic.parquet"
@@ -59,12 +61,19 @@ class Basic:
 
     def values(self):
         df = pd.read_parquet(CLEAN_FILE_PATH)
-        self.prices = df.groupby("ticker").agg({"close": "last"}).to_numpy().T[0]
-        self.names = df["ticker"].unique()
-        self.expected_returns = df.groupby("ticker")["ret"].mean().to_numpy()
-        self.covariance_matrix = (
+        names = df["ticker"].unique()
+        prices = df.groupby("ticker").agg({"close": "last"}).to_numpy().T[0]
+        expected_returns = df.groupby("ticker")["ret"].mean().to_numpy()
+        covariance_matrix = (
             df.pivot(index="date", values="ret", columns="ticker")
             .fillna(0)
             .cov()
             .to_numpy()
+        )
+
+        self.asset_data = AssetData(
+            names,
+            prices,
+            expected_returns,
+            covariance_matrix
         )
