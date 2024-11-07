@@ -4,7 +4,7 @@ import cvxpy as cp
 from research.interfaces import AssetData
 
 
-def qp(data: AssetData, weights:np.ndarray[float], gamma: float = 2, scale_weights: bool = True):
+def qp(data: AssetData, weights:np.ndarray[float], gamma: float, scale_weights: bool):
     if gamma == 0:
         raise "Cannot optimize with gamma of 0. Unbounded"
     

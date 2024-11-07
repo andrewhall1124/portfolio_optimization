@@ -4,7 +4,7 @@ import pandas as pd
 from research.portfolio import Portfolio
 from research.enums import Optimizer, Rounding, ChartType
 from research.datasets import Basic
-from research.utils import print_table, chart
+from research.utils import table, chart
 
 data = Basic()
 methods = [Rounding.CEIL, Rounding.FLOOR, Rounding.MID]
@@ -75,7 +75,7 @@ for opt_weights, optimizer in zip(opt_weights_list, optimizers):
         }
     )
 
-print_table(results, 8)
+table(results, 8)
 
 results = pd.DataFrame(results)
 results = results[~results['method'].isin(['mvo', 'qp'])]

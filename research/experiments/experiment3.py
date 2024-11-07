@@ -4,7 +4,7 @@ import pandas as pd
 from research.portfolio import Portfolio
 from research.enums import Optimizer, Rounding
 from research.datasets import Basic
-from research.utils import print_table
+from research.utils import table
 
 data = Basic()
 methods = [Rounding.CEIL, Rounding.FLOOR, Rounding.MID]
@@ -41,4 +41,4 @@ results_list.append(result)
 
 results = pd.concat(results_list)
 
-print_table(results)
+table(results)

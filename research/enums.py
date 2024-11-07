@@ -4,11 +4,10 @@ from enum import Enum
 class Optimizer(Enum):
     SLSQP = "slsqp"
     QP = "qp"
-    TWO_STAGE = "two_stage"
+    TWO_STAGE_SLSQP = "two_stage_slsqp"
+    TWO_STAGE_QP = "two_stage_qp"
     MIQP = "miqp"
     GA = "ga"
-    ITER_QP = "iter_qp"
-    ITER_MIQP = "iter_miqp"
 
 
 class Rounding(Enum):

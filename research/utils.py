@@ -15,7 +15,7 @@ def check_figures_dir():
         os.makedirs(FIGURES_DIR)
 
 
-def print_table(df: pd.DataFrame, precision: int = 2):
+def table(df: pd.DataFrame, precision: int = 2):
 
     print(
         "\n"

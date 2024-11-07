@@ -4,19 +4,25 @@ import numpy as np
 from research.portfolio import Portfolio
 from research.enums import Optimizer, ChartType
 from research.datasets import Basic
-from research.utils import print_table, chart
+from research.utils import table, chart
+from research.optimizers import optimize
 
-data = Basic()
+data = Basic().asset_data
 budget = 1e6
-portfolio = Portfolio(
-    data.names, data.prices, data.expected_returns, data.covariance_matrix, budget
-)
-gammas = np.linspace(1, 10, 40)
+gammas = np.linspace(1, 10, 19)
 
 results_list = []
 
+# Initial weights
+n_assets = len(data.names)
+initial_weights = np.ones(n_assets) / n_assets
+
 for gamma in gammas:
-    portfolio.optimize(method=Optimizer.QP, gamma=gamma, scale_weights=False)
+    # Optimize portfolio
+    optimal_weights = optimize(Optimizer.QP, data, initial_weights,gamma=gamma, scale_weights=False)
+    portfolio = Portfolio(data, optimal_weights, budget, annualize=252)
+
+    # Create results dataframe
     result = portfolio.metrics_df(include_weights=True)
     result["weights_sum"] = sum(portfolio.weights)
     result["gamma"] = gamma
@@ -26,7 +32,7 @@ for gamma in gammas:
 
 results = pd.concat(results_list)
 
-print_table(results)
+table(results)
 
 chart(
     type=ChartType.SCATTER,
