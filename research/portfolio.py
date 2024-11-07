@@ -110,6 +110,7 @@ class Portfolio:
         method: Optimizer,
         gamma: float = 2,
         rounding: Rounding = None,
+        scale_weights: bool = None,
     ):
         self._reset_weights()
 
@@ -118,7 +119,7 @@ class Portfolio:
                 self.mvo()
 
             case Optimizer.QP:
-                self.qp(gamma)
+                self.qp(gamma, scale_weights)
 
             case Optimizer.TWO_STAGE:
                 self.two_stage()

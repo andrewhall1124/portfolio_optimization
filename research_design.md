@@ -50,3 +50,9 @@ Portfolios constructed with Integer Quadratic Programming (IQP) under the whole-
 1. Table of optimization methods and resulting heuristics
 2. Illustration of mean variance utility function optimization
 3. Illustration of rounding methodologies vs. whole share constrained methods
+
+## Notes
+
+- QP works with one shot by optimizing without weight constraints and then scaling by the weight sum.
+- MIQP won't work the same way that QP does, since you can't scale the whole shares in the same way.
+- MIQP also doesn't scale to the same level as QP, due to time complexity.

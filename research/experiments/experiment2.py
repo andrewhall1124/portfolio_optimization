@@ -16,7 +16,7 @@ gammas = np.linspace(1, 10, 40)
 results_list = []
 
 for gamma in gammas:
-    portfolio.optimize(method=Optimizer.QP, gamma=gamma)
+    portfolio.optimize(method=Optimizer.QP, gamma=gamma, scale_weights=False)
     result = portfolio.metrics_df(include_weights=True)
     result["weights_sum"] = sum(portfolio.weights)
     result["gamma"] = gamma
@@ -42,7 +42,7 @@ chart(
     type=ChartType.SCATTER,
     data=results,
     x_col="gamma",
-    y_col="sharpe",
-    file_name="experiment2-sharpe.png",
-    title="Sharpe Frontier Space",
+    y_col="weights_sum",
+    file_name="experiment2-leverage.png",
+    title="Leverage vs. Gamma",
 )
