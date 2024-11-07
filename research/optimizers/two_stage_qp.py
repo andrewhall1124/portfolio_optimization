@@ -4,9 +4,9 @@ from research.interfaces import AssetData
 import cvxpy as cp
 
 def two_stage_qp(data: AssetData, weights:np.ndarray[float], gamma: float, budget: float):
-    optimal_weights = qp(data, weights, gamma)
+    optimal_weights = qp(data, weights, gamma, scale_weights=True)
     n_assets = len(data.names)
-
+    
     shares = cp.Variable(n_assets, integer=True)
     weights = cp.multiply(shares, data.prices / budget)
 

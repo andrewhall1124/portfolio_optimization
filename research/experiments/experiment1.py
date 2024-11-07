@@ -10,7 +10,7 @@ from research.optimizers import optimize
 
 data: AssetData = Basic().asset_data
 n_assets = len(data.names)
-optimizers = [Optimizer.SLSQP, Optimizer.QP, Optimizer.TWO_STAGE_SLSQP, Optimizer.TWO_STAGE_QP, Optimizer.MIQP] #
+optimizers = [Optimizer.SLSQP, Optimizer.QP, Optimizer.TWO_STAGE_SLSQP, Optimizer.TWO_STAGE_QP, Optimizer.MIQP]
 budget = 1e6
 
 results_list = []

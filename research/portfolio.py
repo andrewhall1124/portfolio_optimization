@@ -39,6 +39,8 @@ class Portfolio:
         self.allocations = self.shares * self.data.prices
         self.value = self.allocations.sum()
         self.weights = self.allocations / self.value
+
+        return self.weights
         
 
     def metrics_df(self, include_weights: bool = False, include_shares: bool = False):
