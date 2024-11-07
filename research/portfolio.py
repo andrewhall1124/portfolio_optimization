@@ -91,7 +91,7 @@ class Portfolio:
 
         metrics_dict = {
             "expected_return": expected_return * 100,
-            "standard_devation": standard_devation * 100,
+            "standard_deviation": standard_devation * 100,
             "sharpe": sharpe,
             "value": self.value,
             "deficit": self.budget - self.value,
@@ -110,7 +110,7 @@ class Portfolio:
         method: Optimizer,
         gamma: float = 2,
         rounding: Rounding = None,
-        scale_weights: bool = None,
+        scale_weights: bool = True,
     ):
         self._reset_weights()
 
@@ -156,7 +156,7 @@ class Portfolio:
 
         return result.x
 
-    def qp(self, gamma: float, scale_weights=True):
+    def qp(self, gamma: float, scale_weights):
 
         if gamma == 0:
             raise "Cannot optimize with gamma of 0. Unbounded"

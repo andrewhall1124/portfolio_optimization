@@ -15,12 +15,12 @@ def check_figures_dir():
         os.makedirs(FIGURES_DIR)
 
 
-def print_table(df: pd.DataFrame):
+def print_table(df: pd.DataFrame, precision: int = 2):
 
     print(
         "\n"
         + tabulate(
-            df, headers="keys", tablefmt="heavy_grid", showindex=False, floatfmt=".2f"
+            df, headers="keys", tablefmt="heavy_grid", showindex=False, floatfmt=f".{precision}f"
         )
         + "\n"
     )
@@ -35,6 +35,7 @@ def chart(
     plot_frontier: bool = False,
     file_name: str = None,
     title: str = None,
+    dimensions: tuple[int,int] = None
 ):
     # Capitalize Variables
     cols = [col for col in [x_col, y_col, z_col] if col]
@@ -44,6 +45,9 @@ def chart(
     x_col, y_col = new_cols[:2]
     z_col = new_cols[2] if z_col else None
 
+    if dimensions:
+        plt.figure(figsize=dimensions)
+
     # Create Plot
     match type:
         case ChartType.SCATTER:
@@ -51,6 +55,9 @@ def chart(
 
         case ChartType.LINE:
             sns.lineplot(data, x=x_col, y=y_col, hue=z_col)
+
+        case ChartType.BAR:
+            sns.barplot(data, x=x_col, y=y_col, hue=z_col)
 
     if title:
         plt.title(title)

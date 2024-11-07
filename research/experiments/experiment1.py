@@ -7,7 +7,7 @@ from research.datasets import Basic
 from research.utils import print_table
 
 data = Basic()
-optimizers = [Optimizer.MVO, Optimizer.QP, Optimizer.TWO_STAGE]
+optimizers = [Optimizer.MVO, Optimizer.QP, Optimizer.TWO_STAGE, Optimizer.MIQP]
 budget = 1e6
 portfolio = Portfolio(
     data.names, data.prices, data.expected_returns, data.covariance_matrix, budget

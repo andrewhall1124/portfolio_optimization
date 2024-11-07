@@ -20,3 +20,4 @@ class Rounding(Enum):
 class ChartType(Enum):
     SCATTER = "scatter"
     LINE = "line"
+    BAR = "bar"

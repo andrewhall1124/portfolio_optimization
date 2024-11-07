@@ -31,7 +31,7 @@ print_table(results)
 chart(
     type=ChartType.SCATTER,
     data=results,
-    x_col="standard_devation",
+    x_col="standard_deviation",
     y_col="expected_return",
     z_col="gamma",
     file_name="experiment2-frontier.png",
