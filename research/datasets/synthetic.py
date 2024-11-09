@@ -17,20 +17,18 @@ class Synthetic:
 
     def generate(self):
 
-        # Generate synthetic stock prices
-        prices = np.round(np.random.normal(self.price_mean, self.price_std, self.n_assets),2)
+        prices = np.round(abs(np.random.normal(self.price_mean, self.price_std, self.n_assets)),2)
 
-        # Create a DataFrame with synthetic stock prices
-        stock_data = pd.DataFrame({
-            'Stock': [f'Stock_{i+1}' for i in range(self.n_assets)],
-            'Price': prices
-        })
+        names = [f'stock_{i+1}' for i in range(self.n_assets)]
 
-        # Display the first few rows
-        print(stock_data)
+        expected_returns = np.ones(self.n_assets) / 10
 
+        covariance_matrix = np.full((self.n_assets, self.n_assets), 0.1)
+        np.fill_diagonal(covariance_matrix, .2)
 
-    def clean(self):
-        pass
-
-Synthetic(100,10000,20)
+        self.asset_data = AssetData(
+            names=names,
+            prices=prices,
+            expected_returns=expected_returns,
+            covariance_matrix=covariance_matrix
+        )
