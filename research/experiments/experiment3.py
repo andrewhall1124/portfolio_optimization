@@ -30,18 +30,21 @@ def optimize_portfolio(optimizer: Optimizer, rounding: Rounding = None):
 results_list = []
 
 # Optimize MVO portfolio for benchmarking
-result = optimize_portfolio(Optimizer.SLSQP)
+result = optimize_portfolio(Optimizer.QP)
 results_list.append(result)
 
 # Optimize MVO portfolio with post optimization weight rounding
 for method in methods:
-    result = optimize_portfolio(Optimizer.SLSQP, method)
+    result = optimize_portfolio(Optimizer.QP, method)
     results_list.append(result)
 
 # Optimize portfolio with two-stage optimization
-result = optimize_portfolio(Optimizer.TWO_STAGE_SLSQP)
+result = optimize_portfolio(Optimizer.TWO_STAGE_QP)
 results_list.append(result)
 
 results = pd.concat(results_list)
 
-table(results)
+table(
+    title="Comparison of rounding methods for quadratic programming",
+    data=results
+    )

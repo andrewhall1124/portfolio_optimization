@@ -15,12 +15,14 @@ def check_figures_dir():
         os.makedirs(FIGURES_DIR)
 
 
-def table(df: pd.DataFrame, precision: int = 2):
-
+def table(data: pd.DataFrame, title: str = "", precision: int = 2):
+    title = "\n" + title
     print(
+        title 
+        +
         "\n"
         + tabulate(
-            df, headers="keys", tablefmt="heavy_grid", showindex=False, floatfmt=f".{precision}f"
+            data, headers="keys", tablefmt="heavy_grid", showindex=False, floatfmt=f".{precision}f"
         )
         + "\n"
     )

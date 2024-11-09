@@ -44,8 +44,11 @@ for budget in budgets:
 
 results = pd.DataFrame(results)
 
-table(results, precision=4)
-
+table(
+    title="Backlog risk for increasing budget levels",
+    data=results,
+    precision=4
+    )
 chart(
     type=ChartType.SCATTER,
     data=results,

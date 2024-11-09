@@ -77,7 +77,11 @@ for optimizer in [Optimizer.TWO_STAGE_SLSQP, Optimizer.TWO_STAGE_QP]:
             }
         )
 
-table(results, 8)
+table(
+    title="Backlog risk for different combinations of benchmarks and optimization methods",
+    data=results,
+    precision=8
+    )
 
 results = pd.DataFrame(results)
 results = results[~results['method'].isin(['slsqp', 'qp'])]

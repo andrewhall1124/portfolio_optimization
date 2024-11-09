@@ -9,13 +9,13 @@ from research.interfaces import AssetData
 from research.optimizers import optimize
 
 data: AssetData = Basic().asset_data
+data.prices = [1e2,2e2,3e2,1e5]
 n_assets = len(data.names)
-optimizers = [Optimizer.SLSQP, Optimizer.QP, Optimizer.TWO_STAGE_SLSQP, Optimizer.TWO_STAGE_QP, Optimizer.MIQP]
 budget = 1e6
 
 results_list = []
 
-for optimizer in optimizers:
+for optimizer in [Optimizer.QP, Optimizer.TWO_STAGE_QP]:
     # Optimize portfolio
     initial_weights = np.ones(n_assets) / n_assets
     optimal_weights = optimize(optimizer, data, initial_weights, budget=budget)
@@ -30,7 +30,14 @@ for optimizer in optimizers:
 
 results = pd.concat(results_list)
 
+prices_table = pd.DataFrame(columns=data.names, data=[data.prices])
+
 table(
-    title="Overview of optimization methods",
+    title="Simulated prices of real assets (one asset with large price)",
+    data=prices_table
+    )
+
+table(
+    title="Optimization outcomes",
     data=results
     )

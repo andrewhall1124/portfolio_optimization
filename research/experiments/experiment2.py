@@ -32,7 +32,10 @@ for gamma in gammas:
 
 results = pd.concat(results_list)
 
-table(results)
+table(
+    title="Optimization outcomes for different levels of gamma",
+    data=results
+    )
 
 chart(
     type=ChartType.SCATTER,

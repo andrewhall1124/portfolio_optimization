@@ -33,7 +33,11 @@ for budget in budgets:
 
 results = pd.DataFrame(results)
 
-table(results, precision=4)
+table(
+    title="Log mean absolute error for increasing budget levels",
+    data=results,
+    precision=4
+    )
 
 chart(
     type=ChartType.SCATTER,
