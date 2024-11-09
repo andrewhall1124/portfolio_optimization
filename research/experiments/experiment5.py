@@ -22,12 +22,12 @@ for budget in budgets:
     # Two-stage portfolio
     two_weights = optimize(Optimizer.TWO_STAGE_QP, data, initial_weights, budget=budget)
 
-    weigh_difference = sum(abs(optimal_weights - two_weights))
+    mean_absolute_error = np.mean(abs(optimal_weights - two_weights))
 
     results.append(
         {
             'budget': f"1e{str(int(np.log10(budget)))}",
-            'log_sum_abs_difference': np.log(weigh_difference)
+            'log_mean_absolute_error': np.log(mean_absolute_error)
         }
     )   
 
@@ -39,7 +39,7 @@ chart(
     type=ChartType.SCATTER,
     data=results,
     x_col='budget',
-    y_col="log_sum_abs_difference",
+    y_col="log_mean_absolute_error",
     file_name="experiment5-budget",
     title="Budget vs. Difference in Weights"
 )
