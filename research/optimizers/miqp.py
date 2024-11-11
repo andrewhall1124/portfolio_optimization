@@ -3,7 +3,7 @@ from research.interfaces import AssetData
 import numpy as np
 from numpy.typing import NDArray
 
-def miqp(data: AssetData, gamma, budget: float) -> NDArray[np.float64]:
+def miqp(data: AssetData, gamma: float, budget: float) -> NDArray[np.float64]:
     n_assets = len(data.names)
 
     shares = cp.Variable(n_assets, integer=True)
