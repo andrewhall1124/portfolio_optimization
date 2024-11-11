@@ -35,3 +35,8 @@ To run an experiment, simply execute the corresponding experiment py file from t
 ```bash
 python -m research.experiments.experiment1
 ```
+
+### Check types
+```bash
+mypy . --explicit-package-bases --disallow-untyped-defs
+```

@@ -5,10 +5,11 @@ from .qp import qp
 from .two_stage_slsqp import two_stage_slsqp
 from .two_stage_qp import two_stage_qp
 from .miqp import miqp
-
 import numpy as np
+from numpy.typing import NDArray
+from typing import Any
 
-def optimize(optimizer: Optimizer, data: AssetData, weights: np.ndarray, **kwargs):
+def optimize(optimizer: Optimizer, data: AssetData, weights: np.ndarray, **kwargs: Any) -> NDArray[np.float64]:
 
     # Default kwargs
     budget = kwargs.get("budget", None)
@@ -31,3 +32,5 @@ def optimize(optimizer: Optimizer, data: AssetData, weights: np.ndarray, **kwarg
 
         case Optimizer.MIQP:
             return miqp(data, gamma, budget)
+
+    return np.array([])

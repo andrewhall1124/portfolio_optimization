@@ -10,12 +10,12 @@ from research.enums import ChartType
 FIGURES_DIR = "research/figures/"
 
 
-def check_figures_dir():
+def check_figures_dir() -> None:
     if not os.path.exists(FIGURES_DIR):
         os.makedirs(FIGURES_DIR)
 
 
-def table(data: pd.DataFrame, title: str = "", precision: int = 2):
+def table(data: pd.DataFrame, title: str = "", precision: int = 2) -> None:
     title = "\n" + title
     print(
         title 
@@ -38,7 +38,7 @@ def chart(
     file_name: str | None = None,
     title: str | None = None,
     dimensions: tuple[int,int] | None = None
-):
+) -> None:
     # Capitalize Variables
     cols = [col for col in [x_col, y_col, z_col] if col]
     new_cols = [col.replace("_", " ").title() for col in cols]

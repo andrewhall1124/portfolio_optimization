@@ -6,7 +6,7 @@ from research.interfaces import AssetData
 
 def iter_miqp(data: AssetData, budget: float) -> NDArray[np.float64]:
 
-    def sharpe(weights):
+    def sharpe(weights: NDArray[np.float64]) -> float:
         portfolio_return = weights.T @ data.expected_returns
         portfolio_volatility = np.sqrt(weights.T @ data.covariance_matrix @ weights)
         return portfolio_return / portfolio_volatility
@@ -19,7 +19,7 @@ def iter_miqp(data: AssetData, budget: float) -> NDArray[np.float64]:
     # Initial solution
     prev_sharpe = -np.inf
     cur_weights= np.array([])
-    cur_sharpe = 0
+    cur_sharpe = 0.0
 
     iterations = 0
     # Run binary search on the sharpe ratio curve

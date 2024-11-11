@@ -7,7 +7,7 @@ from research.interfaces import AssetData
 
 class Synthetic:
 
-    def __init__(self, price_mean, price_std, n_assets) -> None:
+    def __init__(self, price_mean: float, price_std: float, n_assets: int) -> None:
         self.price_mean = price_mean
         self.price_std = price_std
         self.n_assets = n_assets
@@ -15,11 +15,11 @@ class Synthetic:
         self.generate()
 
 
-    def generate(self):
+    def generate(self) -> None:
 
         prices = np.round(abs(np.random.normal(self.price_mean, self.price_std, self.n_assets)),2)
 
-        names = [f'stock_{i+1}' for i in range(self.n_assets)]
+        names = np.array([f'stock_{i+1}' for i in range(self.n_assets)])
 
         expected_returns = np.ones(self.n_assets) / 10
 

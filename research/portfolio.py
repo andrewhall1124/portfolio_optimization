@@ -22,7 +22,7 @@ class Portfolio:
         self.shares: NDArray[np.float64] = self.allocations / self.data.prices
         self.value = np.dot(self.shares, self.data.prices)
 
-    def round(self, rounding: Rounding | None):
+    def round(self, rounding: Rounding | None) -> NDArray[np.float64]:
         # Rounding
         match rounding:
             case Rounding.CEIL:
@@ -42,7 +42,7 @@ class Portfolio:
         return self.weights
         
 
-    def metrics_df(self, include_weights: bool = False, include_shares: bool = False):
+    def metrics_df(self, include_weights: bool = False, include_shares: bool = False) -> pd.DataFrame:
         # Metrics
         expected_return = (self.weights.T @ self.data.expected_returns) * self.annualize
         standard_deviation = np.sqrt(self.weights.T @ self.data.covariance_matrix @ self.weights) * np.sqrt(self.annualize)
