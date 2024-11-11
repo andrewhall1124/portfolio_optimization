@@ -1,8 +1,8 @@
-from tabulate import tabulate
+from tabulate import tabulate # type: ignore
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+import seaborn as sns # type: ignore
 import os
 
 from research.enums import ChartType
@@ -33,11 +33,11 @@ def chart(
     data: pd.DataFrame,
     x_col: str,
     y_col: str,
-    z_col: str = None,
+    z_col: str | None = None,
     plot_frontier: bool = False,
-    file_name: str = None,
-    title: str = None,
-    dimensions: tuple[int,int] = None
+    file_name: str | None = None,
+    title: str | None = None,
+    dimensions: tuple[int,int] | None = None
 ):
     # Capitalize Variables
     cols = [col for col in [x_col, y_col, z_col] if col]

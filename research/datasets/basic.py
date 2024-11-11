@@ -1,5 +1,5 @@
 import pandas as pd
-import yfinance as yf
+import yfinance as yf # type: ignore
 import os
 import pandas as pd
 from .config import ROOT
@@ -29,14 +29,14 @@ class Basic:
         self.df = pd.read_parquet(CLEAN_FILE_PATH)
         self.values()
 
-    def download(self):
+    def download(self) -> None:
         tickers = sorted(["AAPL", "VZ", "F", "COKE"])
         start = "2010-01-01"
         end = "2019-12-31"
         raw_stocks = yf.download(tickers, start, end).stack().reset_index()
         raw_stocks.to_csv(RAW_FILE_PATH, index=False)
 
-    def clean(self):
+    def clean(self) -> None:
         df = pd.read_csv(RAW_FILE_PATH)
 
         # Rename olumns
@@ -58,7 +58,7 @@ class Basic:
         # Save
         df.to_parquet(CLEAN_FILE_PATH)
 
-    def values(self):
+    def values(self) -> None:
         df = pd.read_parquet(CLEAN_FILE_PATH)
         names = df["ticker"].unique()
         prices = df.groupby("ticker").agg({"close": "last"}).to_numpy().T[0]

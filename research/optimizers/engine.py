@@ -21,13 +21,13 @@ def optimize(optimizer: Optimizer, data: AssetData, weights: np.ndarray, **kwarg
             return slsqp(data, weights)
         
         case Optimizer.QP:
-            return qp(data, weights, gamma, scale_weights)
+            return qp(data, gamma, scale_weights)
         
         case Optimizer.TWO_STAGE_SLSQP:
             return two_stage_slsqp(data, weights, budget)
         
         case Optimizer.TWO_STAGE_QP:
-            return two_stage_qp(data, weights, gamma, budget)
+            return two_stage_qp(data, gamma, budget)
 
         case Optimizer.MIQP:
-            return miqp(data, weights, gamma, budget)
+            return miqp(data, gamma, budget)

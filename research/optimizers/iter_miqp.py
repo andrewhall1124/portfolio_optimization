@@ -1,9 +1,10 @@
 import numpy as np
+from numpy.typing import NDArray
 from .miqp import miqp
 
 from research.interfaces import AssetData
 
-def iter_miqp(data: AssetData, weights:np.ndarray[float]):
+def iter_miqp(data: AssetData, budget: float) -> NDArray[np.float64]:
 
     def sharpe(weights):
         portfolio_return = weights.T @ data.expected_returns
@@ -12,12 +13,12 @@ def iter_miqp(data: AssetData, weights:np.ndarray[float]):
     
     # Set precision and other parameters
     precision = 1e-6
-    gamma_low, gamma_high = 0, 20
+    gamma_low, gamma_high = 0.0, 20.0
     max_iterations = 20
 
     # Initial solution
     prev_sharpe = -np.inf
-    cur_weights = None
+    cur_weights= np.array([])
     cur_sharpe = 0
 
     iterations = 0
@@ -28,8 +29,8 @@ def iter_miqp(data: AssetData, weights:np.ndarray[float]):
         # self._update_allocations()
         # print(f"Iteration: {iterations}, gamma range: [{gamma_low}, {gamma_high}], sharpe: {cur_sharpe}")
 
-        left_weights = miqp(data, weights, gamma_mid - precision)
-        right_weights = miqp(data, weights, gamma_mid + precision)
+        left_weights = miqp(data, gamma_mid - precision, budget)
+        right_weights = miqp(data, gamma_mid + precision, budget)
 
         left_sharpe = sharpe(left_weights)
         right_sharpe = sharpe(right_weights)

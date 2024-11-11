@@ -1,10 +1,11 @@
 from .slsqp import slsqp
 import numpy as np
+from numpy.typing import NDArray
 from research.interfaces import AssetData
 import cvxpy as cp
 
-def two_stage_slsqp(data: AssetData, weights:np.ndarray[float], budget: float):
-    optimal_weights = slsqp(data, weights)
+def two_stage_slsqp(data: AssetData, initial_weights: NDArray[np.float64], budget: float) -> NDArray[np.float64]:
+    optimal_weights = slsqp(data, initial_weights)
     optimal_values = optimal_weights * budget
 
     n_assets = len(data.names)
@@ -22,6 +23,6 @@ def two_stage_slsqp(data: AssetData, weights:np.ndarray[float], budget: float):
 
     problem.solve(solver=cp.GUROBI)
 
-    weights = shares.value * data.prices / budget
+    approximate_weights = shares.value * data.prices / budget
     
-    return weights
+    return approximate_weights

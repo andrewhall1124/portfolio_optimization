@@ -12,7 +12,7 @@ data: AssetData = Basic().asset_data
 n_assets = len(data.names)
 budgets = [1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12]
 
-results = []
+results_list = []
 initial_weights = np.ones(n_assets) / n_assets
 
 for budget in budgets:
@@ -35,14 +35,14 @@ for budget in budgets:
 
     backlog_ratio = num_var / den_var
 
-    results.append(
+    results_list.append(
         {
             'budget': f"1e{str(int(np.log10(budget)))}",
             'log_backlog_ratio': np.log(backlog_ratio)
         }
     )   
 
-results = pd.DataFrame(results)
+results = pd.DataFrame(results_list)
 
 table(
     title="Backlog risk for increasing budget levels",

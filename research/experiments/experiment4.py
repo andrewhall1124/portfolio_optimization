@@ -15,7 +15,7 @@ budget = 1e6
 n_assets = len(data.names)
 initial_weights = np.ones(n_assets) / n_assets
 
-results = []
+results_list = []
 
 opt_weights_list = []
 for optimizer in [Optimizer.SLSQP, Optimizer.QP]:
@@ -24,7 +24,7 @@ for optimizer in [Optimizer.SLSQP, Optimizer.QP]:
     portfolio = Portfolio(data, optimal_weights, budget, annualize=252)
     result = portfolio.metrics_df()
 
-    results.append(
+    results_list.append(
         {
             'method': optimizer.value,
             'standard_deviation': result['standard_deviation'].iloc[0],
@@ -46,7 +46,7 @@ for optimizer in [Optimizer.SLSQP, Optimizer.QP]:
             backlog = np.sqrt(opt_m_rnd.T @ data.covariance_matrix @ opt_m_rnd) * np.sqrt(252)
 
             result = portfolio.metrics_df()
-            results.append(
+            results_list.append(
                 {
                     'method': optimizer.value + "_" + method.value,
                     'standard_deviation': result['standard_deviation'].iloc[0],
@@ -66,7 +66,7 @@ for optimizer in [Optimizer.TWO_STAGE_SLSQP, Optimizer.TWO_STAGE_QP]:
         backlog = np.sqrt(opt_m_two.T @ data.covariance_matrix @ opt_m_two) * np.sqrt(252)
 
         result = portfolio.metrics_df()
-        results.append(
+        results_list.append(
             {
                 'method': optimizer.value,
                 'standard_deviation': result['standard_deviation'].iloc[0],
@@ -77,13 +77,14 @@ for optimizer in [Optimizer.TWO_STAGE_SLSQP, Optimizer.TWO_STAGE_QP]:
             }
         )
 
+results = pd.DataFrame(results_list)
+
 table(
     title="Backlog risk for different combinations of benchmarks and optimization methods",
     data=results,
     precision=8
     )
 
-results = pd.DataFrame(results)
 results = results[~results['method'].isin(['slsqp', 'qp'])]
 
 chart(

@@ -11,3 +11,5 @@ pyarrow
 tabulate
 pyscipopt
 gurobipy
+mypy
+pandas-stubs

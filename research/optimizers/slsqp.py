@@ -1,6 +1,6 @@
 from research.interfaces import AssetData
 from research.portfolio import Portfolio
-from scipy.optimize import minimize
+from scipy.optimize import minimize # type: ignore
 import numpy as np
 
 def slsqp(data: AssetData, weights: np.ndarray):

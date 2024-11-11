@@ -2,9 +2,10 @@ from .qp import qp
 import numpy as np
 from research.interfaces import AssetData
 import cvxpy as cp
+from numpy.typing import NDArray
 
-def two_stage_qp(data: AssetData, weights:np.ndarray[float], gamma: float, budget: float):
-    optimal_weights = qp(data, weights, gamma, scale_weights=True)
+def two_stage_qp(data: AssetData, gamma: float, budget: float) -> NDArray[np.float64]:
+    optimal_weights = qp(data, gamma, scale_weights=True)
     optimal_values = optimal_weights * budget
     n_assets = len(data.names)
     
@@ -21,6 +22,6 @@ def two_stage_qp(data: AssetData, weights:np.ndarray[float], gamma: float, budge
 
     problem.solve(solver=cp.GUROBI)
 
-    weights = shares.value * data.prices / budget
+    approximate_weights = shares.value * data.prices / budget
 
-    return weights
+    return approximate_weights

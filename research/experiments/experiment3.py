@@ -15,7 +15,7 @@ budget = 1e6
 n_assets = len(data.names)
 initial_weights = np.ones(n_assets) / n_assets
 
-def optimize_portfolio(optimizer: Optimizer, rounding: Rounding = None):
+def optimize_portfolio(optimizer: Optimizer, rounding: Rounding | None = None) -> pd.DataFrame:
     optimal_weights = optimize(optimizer, data, initial_weights, budget=budget)
     portfolio = Portfolio(data, optimal_weights, budget, annualize=252)
     portfolio.round(rounding)

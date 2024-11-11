@@ -9,7 +9,7 @@ from research.interfaces import AssetData
 from research.optimizers import optimize
 
 data: AssetData = Basic().asset_data
-data.prices = [1e2,2e2,3e2,1e5]
+data.prices = np.array([1e2,2e2,3e2,1e5])
 n_assets = len(data.names)
 budget = 1e6
 

@@ -1,12 +1,11 @@
 import numpy as np
 import cvxpy as cp
+from numpy.typing import NDArray
 
 from research.interfaces import AssetData
 
 
-def qp(data: AssetData, weights:np.ndarray[float], gamma: float, scale_weights: bool):
-    if gamma == 0:
-        raise "Cannot optimize with gamma of 0. Unbounded"
+def qp(data: AssetData, gamma: float, scale_weights: bool = False) -> NDArray[np.float64]:
     
     n_assets = len(data.names)
 
@@ -21,6 +20,6 @@ def qp(data: AssetData, weights:np.ndarray[float], gamma: float, scale_weights: 
     problem.solve()
 
     total_value = np.sum(weights.value)
-    weights = weights.value / total_value if scale_weights else weights.value
+    optimal_weights = weights.value / total_value if scale_weights else weights.value
 
-    return weights
+    return optimal_weights

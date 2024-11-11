@@ -1,7 +1,6 @@
 import numpy as np
+from numpy.typing import NDArray
 import pandas as pd
-import cvxpy as cp
-from scipy.optimize import minimize
 
 from research.enums import Rounding
 from research.interfaces import AssetData
@@ -17,13 +16,13 @@ class Portfolio:
 
         self._update_allocations()
 
-    def _update_allocations(self):
+    def _update_allocations(self) -> None:
         # Allocations, shares, and value
-        self.allocations: np.ndarray[float] = self.weights * self.budget
-        self.shares: np.ndarray[float] = self.allocations / self.data.prices
+        self.allocations: NDArray[np.float64] = self.weights * self.budget
+        self.shares: NDArray[np.float64] = self.allocations / self.data.prices
         self.value = np.dot(self.shares, self.data.prices)
 
-    def round(self, rounding: Rounding):
+    def round(self, rounding: Rounding | None):
         # Rounding
         match rounding:
             case Rounding.CEIL:

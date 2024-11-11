@@ -1,8 +1,9 @@
 import cvxpy as cp
 from research.interfaces import AssetData
 import numpy as np
+from numpy.typing import NDArray
 
-def miqp(data: AssetData, weights:np.ndarray[float], gamma, budget: float):
+def miqp(data: AssetData, gamma, budget: float) -> NDArray[np.float64]:
     n_assets = len(data.names)
 
     shares = cp.Variable(n_assets, integer=True)
@@ -22,6 +23,6 @@ def miqp(data: AssetData, weights:np.ndarray[float], gamma, budget: float):
 
     problem.solve(solver=cp.SCIP)
 
-    weights = shares.value * data.prices / budget
+    optimal_weights = shares.value * data.prices / budget
 
-    return weights
+    return optimal_weights

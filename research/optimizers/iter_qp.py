@@ -1,9 +1,10 @@
 import numpy as np
+from numpy.typing import NDArray
 from .qp import qp
 
 from research.interfaces import AssetData
 
-def iter_qp(data: AssetData, weights:np.ndarray[float]):
+def iter_qp(data: AssetData) -> NDArray[np.float64]:
 
     def sharpe(weights):
         portfolio_return = weights.T @ data.expected_returns
@@ -12,12 +13,12 @@ def iter_qp(data: AssetData, weights:np.ndarray[float]):
     
     # Set precision and other parameters
     precision = 1e-6
-    gamma_low, gamma_high = 0, 20
+    gamma_low, gamma_high = 0.0, 20.0
     max_iterations = 20
 
     # Initial solution
     prev_sharpe = -np.inf
-    cur_weights = None
+    cur_weights = np.array([])
     cur_sharpe = 0
 
     iterations = 0
@@ -25,8 +26,8 @@ def iter_qp(data: AssetData, weights:np.ndarray[float]):
     while iterations < max_iterations:
         gamma_mid = (gamma_low + gamma_high) / 2
 
-        left_weights = qp(data, weights, gamma_mid - precision)
-        right_weights = qp(data, weights, gamma_mid + precision)
+        left_weights = qp(data, gamma_mid - precision)
+        right_weights = qp(data, gamma_mid + precision)
 
         left_sharpe = sharpe(left_weights)
         right_sharpe = sharpe(right_weights)
