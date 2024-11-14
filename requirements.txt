@@ -13,3 +13,4 @@ pyscipopt
 gurobipy
 mypy
 pandas-stubs
+ruff

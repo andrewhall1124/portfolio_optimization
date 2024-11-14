@@ -1,6 +1,5 @@
 from tabulate import tabulate # type: ignore
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns # type: ignore
 import os

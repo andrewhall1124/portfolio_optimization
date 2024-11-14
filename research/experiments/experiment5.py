@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-from research.portfolio import Portfolio
 from research.datasets import Basic
 from research.enums import Optimizer, ChartType
 from research.utils import table, chart

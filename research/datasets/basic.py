@@ -1,7 +1,6 @@
 import pandas as pd
 import yfinance as yf # type: ignore
 import os
-import pandas as pd
 from .config import ROOT
 
 from research.interfaces import AssetData
