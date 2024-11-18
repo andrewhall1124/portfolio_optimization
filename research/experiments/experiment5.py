@@ -1,11 +1,11 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from research.datasets import Basic
-from research.enums import Optimizer, ChartType
-from research.utils import table, chart
+from research.enums import ChartType, Optimizer
 from research.interfaces import AssetData
 from research.optimizers import optimize
+from research.utils import chart, table
 
 data: AssetData = Basic().asset_data
 n_assets = len(data.names)
@@ -25,24 +25,20 @@ for budget in budgets:
 
     results_list.append(
         {
-            'budget': f"1e{str(int(np.log10(budget)))}",
-            'log_mean_absolute_error': np.log(mean_absolute_error)
+            "budget": f"1e{str(int(np.log10(budget)))}",
+            "log_mean_absolute_error": np.log(mean_absolute_error),
         }
-    )   
+    )
 
 results = pd.DataFrame(results_list)
 
-table(
-    title="Log mean absolute error for increasing budget levels",
-    data=results,
-    precision=4
-    )
+table(title="Log mean absolute error for increasing budget levels", data=results, precision=4)
 
 chart(
     type=ChartType.SCATTER,
     data=results,
-    x_col='budget',
+    x_col="budget",
     y_col="log_mean_absolute_error",
     file_name="experiment5-budget",
-    title="Budget vs. Difference in Weights"
+    title="Budget vs. Difference in Weights",
 )

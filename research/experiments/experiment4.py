@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 
-from research.portfolio import Portfolio
-from research.enums import Optimizer, Rounding, ChartType
 from research.datasets import Basic
-from research.utils import table, chart
+from research.enums import ChartType, Optimizer, Rounding
 from research.optimizers import optimize
+from research.portfolio import Portfolio
+from research.utils import chart, table
 
 data = Basic().asset_data
 methods = [Rounding.CEIL, Rounding.FLOOR, Rounding.MID]
@@ -29,30 +29,30 @@ for optimizer in standard_optimizers:
     if optimizer == Optimizer.QP:
         qp_results_list.append(
             {
-                'method': optimizer.value,
-                'standard_deviation': result['standard_deviation'].iloc[0],
-                'value': result['value'].iloc[0],
-                'deficit': budget - result['value'].iloc[0],
-                'benchmark': None,
-                'backlog': None,
+                "method": optimizer.value,
+                "standard_deviation": result["standard_deviation"].iloc[0],
+                "value": result["value"].iloc[0],
+                "deficit": budget - result["value"].iloc[0],
+                "benchmark": None,
+                "backlog": None,
             }
         )
     elif optimizer == Optimizer.SLSQP:
         slsqp_results_list.append(
             {
-                'method': optimizer.value,
-                'standard_deviation': result['standard_deviation'].iloc[0],
-                'value': result['value'].iloc[0],
-                'deficit': budget - result['value'].iloc[0],
-                'benchmark': None,
-                'backlog': None,
+                "method": optimizer.value,
+                "standard_deviation": result["standard_deviation"].iloc[0],
+                "value": result["value"].iloc[0],
+                "deficit": budget - result["value"].iloc[0],
+                "benchmark": None,
+                "backlog": None,
             }
         )
 
 for optimizer, opt_weights in zip(standard_optimizers, opt_weights_list):
     for method in methods:
         optimal_weights = optimize(optimizer, data, initial_weights)
-        portfolio = Portfolio(data,optimal_weights,budget,annualize=252)
+        portfolio = Portfolio(data, optimal_weights, budget, annualize=252)
         rnd_weights = portfolio.round(method)
 
         opt_m_rnd = opt_weights - rnd_weights
@@ -63,27 +63,29 @@ for optimizer, opt_weights in zip(standard_optimizers, opt_weights_list):
         if optimizer == Optimizer.QP:
             qp_results_list.append(
                 {
-                    'method': optimizer.value + "_" + method.value,
-                    'standard_deviation': result['standard_deviation'].iloc[0],
-                    'value': result['value'].iloc[0],
-                    'deficit': budget - result['value'].iloc[0],
-                    'benchmark': optimizer.value,
-                    'backlog': backlog
+                    "method": optimizer.value + "_" + method.value,
+                    "standard_deviation": result["standard_deviation"].iloc[0],
+                    "value": result["value"].iloc[0],
+                    "deficit": budget - result["value"].iloc[0],
+                    "benchmark": optimizer.value,
+                    "backlog": backlog,
                 }
             )
         elif optimizer == Optimizer.SLSQP:
             slsqp_results_list.append(
                 {
-                    'method': optimizer.value + "_" + method.value,
-                    'standard_deviation': result['standard_deviation'].iloc[0],
-                    'value': result['value'].iloc[0],
-                    'deficit': budget - result['value'].iloc[0],
-                    'benchmark': optimizer.value,
-                    'backlog': backlog
+                    "method": optimizer.value + "_" + method.value,
+                    "standard_deviation": result["standard_deviation"].iloc[0],
+                    "value": result["value"].iloc[0],
+                    "deficit": budget - result["value"].iloc[0],
+                    "benchmark": optimizer.value,
+                    "backlog": backlog,
                 }
             )
 
-for optimizer, opt_weights, benchmark in zip([Optimizer.TWO_STAGE_QP, Optimizer.TWO_STAGE_SLSQP], opt_weights_list, standard_optimizers):
+for optimizer, opt_weights, benchmark in zip(
+    [Optimizer.TWO_STAGE_QP, Optimizer.TWO_STAGE_SLSQP], opt_weights_list, standard_optimizers
+):
     two_weights = optimize(optimizer, data, initial_weights, budget=budget)
     portfolio = Portfolio(data, two_weights, budget, annualize=252)
 
@@ -95,67 +97,63 @@ for optimizer, opt_weights, benchmark in zip([Optimizer.TWO_STAGE_QP, Optimizer.
     if optimizer == Optimizer.TWO_STAGE_QP:
         qp_results_list.append(
             {
-                'method': optimizer.value,
-                'standard_deviation': result['standard_deviation'].iloc[0],
-                'value': result['value'].iloc[0],
-                'deficit': budget - result['value'].iloc[0],
-                'benchmark': benchmark.value,
-                'backlog': backlog
+                "method": optimizer.value,
+                "standard_deviation": result["standard_deviation"].iloc[0],
+                "value": result["value"].iloc[0],
+                "deficit": budget - result["value"].iloc[0],
+                "benchmark": benchmark.value,
+                "backlog": backlog,
             }
         )
     elif optimizer == Optimizer.TWO_STAGE_SLSQP:
         slsqp_results_list.append(
             {
-                'method': optimizer.value,
-                'standard_deviation': result['standard_deviation'].iloc[0],
-                'value': result['value'].iloc[0],
-                'deficit': budget - result['value'].iloc[0],
-                'benchmark': benchmark.value,
-                'backlog': backlog
+                "method": optimizer.value,
+                "standard_deviation": result["standard_deviation"].iloc[0],
+                "value": result["value"].iloc[0],
+                "deficit": budget - result["value"].iloc[0],
+                "benchmark": benchmark.value,
+                "backlog": backlog,
             }
-        )     
+        )
 
 qp_results = pd.DataFrame(qp_results_list)
 slsqp_results = pd.DataFrame(slsqp_results_list)
 results = pd.concat([qp_results, slsqp_results])
 
-table(
-    title="Backlog risk for different optimization benchmarks",
-    data=results,
-    precision=6
-    )
+table(title="Backlog risk for different optimization benchmarks", data=results, precision=6)
 
-qp_results = qp_results[qp_results['method'] != 'qp']
-slsqp_results = slsqp_results[slsqp_results['method'] != 'slsqp']
-results = results[~results['method'].isin(['qp','slsqp'])]
+qp_results = qp_results[qp_results["method"] != "qp"]
+slsqp_results = slsqp_results[slsqp_results["method"] != "slsqp"]
+results = results[~results["method"].isin(["qp", "slsqp"])]
 
 chart(
     title="Quadratic Programming: Backlog Risk vs. Optimization Methods",
     file_name="experiment4-backlog-slsqp.png",
-    dimensions=(12,6),
+    dimensions=(12, 6),
     type=ChartType.BAR,
     data=qp_results,
-    x_col='method',
-    y_col='backlog',
+    x_col="method",
+    y_col="backlog",
 )
 
 chart(
     title="SLSQP: Backlog Risk vs. Optimization Methods",
     file_name="experiment4-backlog-qp.png",
-    dimensions=(12,6),
+    dimensions=(12, 6),
     type=ChartType.BAR,
     data=slsqp_results,
-    x_col='method',
-    y_col='backlog',
+    x_col="method",
+    y_col="backlog",
 )
 
 chart(
     title="Backlog Risk vs. Optimization Methods",
     file_name="experiment4-backlog-combined.png",
-    dimensions=(12,6),
+    dimensions=(12, 6),
     type=ChartType.BAR,
     data=results,
-    x_col='method',
-    y_col='backlog',
-    z_col='benchmark'
+    x_col="method",
+    y_col="backlog",
+    z_col="benchmark",
 )

@@ -1,11 +1,11 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from research.portfolio import Portfolio
-from research.enums import Optimizer, ChartType
 from research.datasets import Basic
-from research.utils import table, chart
+from research.enums import ChartType, Optimizer
 from research.optimizers import optimize
+from research.portfolio import Portfolio
+from research.utils import chart, table
 
 data = Basic().asset_data
 budget = 1e6
@@ -19,7 +19,9 @@ initial_weights = np.ones(n_assets) / n_assets
 
 for gamma in gammas:
     # Optimize portfolio
-    optimal_weights = optimize(Optimizer.QP, data, initial_weights,gamma=gamma, scale_weights=False)
+    optimal_weights = optimize(
+        Optimizer.QP, data, initial_weights, gamma=gamma, scale_weights=False
+    )
     portfolio = Portfolio(data, optimal_weights, budget, annualize=252)
 
     # Create results dataframe
@@ -32,10 +34,7 @@ for gamma in gammas:
 
 results = pd.concat(results_list)
 
-table(
-    title="Optimization outcomes for different levels of gamma",
-    data=results
-    )
+table(title="Optimization outcomes for different levels of gamma", data=results)
 
 chart(
     type=ChartType.SCATTER,

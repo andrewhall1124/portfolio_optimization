@@ -1,7 +1,9 @@
 import cvxpy as cp
-from research.interfaces import AssetData
 import numpy as np
 from numpy.typing import NDArray
+
+from research.interfaces import AssetData
+
 
 def miqp(data: AssetData, gamma: float, budget: float) -> NDArray[np.float64]:
     n_assets = len(data.names)

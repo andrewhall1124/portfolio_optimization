@@ -1,8 +1,9 @@
-from tabulate import tabulate # type: ignore
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns # type: ignore
 import os
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from tabulate import tabulate  # type: ignore
 
 from research.enums import ChartType
 
@@ -17,9 +18,8 @@ def check_figures_dir() -> None:
 def table(data: pd.DataFrame, title: str = "", precision: int = 2) -> None:
     title = "\n" + title
     print(
-        title 
-        +
-        "\n"
+        title
+        + "\n"
         + tabulate(
             data, headers="keys", tablefmt="heavy_grid", showindex=False, floatfmt=f".{precision}f"
         )
@@ -36,7 +36,7 @@ def chart(
     plot_frontier: bool = False,
     file_name: str | None = None,
     title: str | None = None,
-    dimensions: tuple[int,int] | None = None
+    dimensions: tuple[int, int] | None = None,
 ) -> None:
     # Capitalize Variables
     cols = [col for col in [x_col, y_col, z_col] if col]

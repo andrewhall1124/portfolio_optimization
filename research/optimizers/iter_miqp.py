@@ -1,16 +1,18 @@
 import numpy as np
 from numpy.typing import NDArray
-from .miqp import miqp
 
 from research.interfaces import AssetData
+
+from .miqp import miqp
+
 
 def iter_miqp(data: AssetData, budget: float) -> NDArray[np.float64]:
 
     def sharpe(weights: NDArray[np.float64]) -> float:
-        portfolio_return = weights.T @ data.expected_returns
-        portfolio_volatility = np.sqrt(weights.T @ data.covariance_matrix @ weights)
+        portfolio_return: float = weights.T @ data.expected_returns
+        portfolio_volatility: float = np.sqrt(weights.T @ data.covariance_matrix @ weights)
         return portfolio_return / portfolio_volatility
-    
+
     # Set precision and other parameters
     precision = 1e-6
     gamma_low, gamma_high = 0.0, 20.0
@@ -18,7 +20,7 @@ def iter_miqp(data: AssetData, budget: float) -> NDArray[np.float64]:
 
     # Initial solution
     prev_sharpe = -np.inf
-    cur_weights= np.array([])
+    cur_weights = np.array([])
     cur_sharpe = 0.0
 
     iterations = 0

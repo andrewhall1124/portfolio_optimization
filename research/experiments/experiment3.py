@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 
-from research.portfolio import Portfolio
-from research.enums import Optimizer, Rounding
 from research.datasets import Basic
-from research.utils import table
+from research.enums import Optimizer, Rounding
 from research.optimizers import optimize
+from research.portfolio import Portfolio
+from research.utils import table
 
 data = Basic().asset_data
 methods = [Rounding.CEIL, Rounding.FLOOR, Rounding.MID]
@@ -14,6 +14,7 @@ budget = 1e6
 # Initial weights
 n_assets = len(data.names)
 initial_weights = np.ones(n_assets) / n_assets
+
 
 def optimize_portfolio(optimizer: Optimizer, rounding: Rounding | None = None) -> pd.DataFrame:
     optimal_weights = optimize(optimizer, data, initial_weights, budget=budget)
@@ -44,7 +45,4 @@ results_list.append(result)
 
 results = pd.concat(results_list)
 
-table(
-    title="Comparison of rounding methods for quadratic programming",
-    data=results
-    )
+table(title="Comparison of rounding methods for quadratic programming", data=results)

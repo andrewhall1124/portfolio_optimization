@@ -1,12 +1,12 @@
-import numpy as np
 import cvxpy as cp
+import numpy as np
 from numpy.typing import NDArray
 
 from research.interfaces import AssetData
 
 
 def qp(data: AssetData, gamma: float, scale_weights: bool = False) -> NDArray[np.float64]:
-    
+
     n_assets = len(data.names)
 
     weights = cp.Variable(n_assets)

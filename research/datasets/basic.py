@@ -1,9 +1,11 @@
-import pandas as pd
-import yfinance as yf # type: ignore
 import os
-from .config import ROOT
+
+import pandas as pd
+import yfinance as yf
 
 from research.interfaces import AssetData
+
+from .config import ROOT
 
 DATA_DIR = ROOT + "/data"
 RAW_FILE_PATH = DATA_DIR + "/basic.csv"
@@ -63,15 +65,7 @@ class Basic:
         prices = df.groupby("ticker").agg({"close": "last"}).to_numpy().T[0]
         expected_returns = df.groupby("ticker")["ret"].mean().to_numpy()
         covariance_matrix = (
-            df.pivot(index="date", values="ret", columns="ticker")
-            .fillna(0)
-            .cov()
-            .to_numpy()
+            df.pivot(index="date", values="ret", columns="ticker").fillna(0).cov().to_numpy()
         )
 
-        self.asset_data = AssetData(
-            names,
-            prices,
-            expected_returns,
-            covariance_matrix
-        )
+        self.asset_data = AssetData(names, prices, expected_returns, covariance_matrix)

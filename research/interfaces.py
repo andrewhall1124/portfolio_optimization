@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 import numpy as np
 from numpy.typing import NDArray
+
 
 @dataclass
 class AssetData:
@@ -11,6 +13,7 @@ class AssetData:
     - Expected returns for the assets
     - Covariance matrix of the asset returns
     """
+
     names: NDArray[np.str_]  # Array of strings (asset names)
     prices: NDArray[np.float64]  # Array of floats (asset prices)
     expected_returns: NDArray[np.float64]  # Array of floats (expected returns)

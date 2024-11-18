@@ -1,6 +1,6 @@
 import numpy as np
-from numpy.typing import NDArray
 import pandas as pd
+from numpy.typing import NDArray
 
 from research.enums import Rounding
 from research.interfaces import AssetData
@@ -33,35 +33,34 @@ class Portfolio:
 
             case Rounding.MID:
                 self.shares = np.round(self.shares)
-        
+
         # Update allocations, value, and weights
         self.allocations = self.shares * self.data.prices
         self.value = self.allocations.sum()
         self.weights = self.allocations / self.value
 
         return self.weights
-        
 
-    def metrics_df(self, include_weights: bool = False, include_shares: bool = False) -> pd.DataFrame:
+    def metrics_df(
+        self, include_weights: bool = False, include_shares: bool = False
+    ) -> pd.DataFrame:
         # Metrics
         expected_return = (self.weights.T @ self.data.expected_returns) * self.annualize
-        standard_deviation = np.sqrt(self.weights.T @ self.data.covariance_matrix @ self.weights) * np.sqrt(self.annualize)
+        standard_deviation = np.sqrt(
+            self.weights.T @ self.data.covariance_matrix @ self.weights
+        ) * np.sqrt(self.annualize)
         sharpe = expected_return / standard_deviation
 
         # Metrics Dataframe
-        weights_dict = {
-            f"{name}_W": weight for name, weight in zip(self.data.names, self.weights)
-        }
-        shares_dict = {
-            f"{name}_S": share for name, share in zip(self.data.names, self.shares)
-        }
+        weights_dict = {f"{name}_W": weight for name, weight in zip(self.data.names, self.weights)}
+        shares_dict = {f"{name}_S": share for name, share in zip(self.data.names, self.shares)}
 
         metrics_dict = {
             "expected_return": expected_return * 100,
             "standard_deviation": standard_deviation * 100,
             "sharpe": sharpe,
             "value": self.value,
-            "deficit": self.value - self.budget
+            "deficit": self.value - self.budget,
         }
 
         combined_dict = metrics_dict.copy()
@@ -71,4 +70,3 @@ class Portfolio:
             combined_dict.update(shares_dict)
 
         return pd.DataFrame(combined_dict, index=[0])
-    

@@ -1,11 +1,11 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from research.datasets import Basic
-from research.enums import Optimizer, ChartType
-from research.utils import table, chart
+from research.enums import ChartType, Optimizer
 from research.interfaces import AssetData
 from research.optimizers import optimize
+from research.utils import chart, table
 
 data: AssetData = Basic().asset_data
 n_assets = len(data.names)
@@ -35,24 +35,17 @@ for budget in budgets:
     backlog_ratio = num_var / den_var
 
     results_list.append(
-        {
-            'budget': f"1e{str(int(np.log10(budget)))}",
-            'log_backlog_ratio': np.log(backlog_ratio)
-        }
-    )   
+        {"budget": f"1e{str(int(np.log10(budget)))}", "log_backlog_ratio": np.log(backlog_ratio)}
+    )
 
 results = pd.DataFrame(results_list)
 
-table(
-    title="Backlog risk for increasing budget levels",
-    data=results,
-    precision=4
-    )
+table(title="Backlog risk for increasing budget levels", data=results, precision=4)
 chart(
     type=ChartType.SCATTER,
     data=results,
-    x_col='budget',
+    x_col="budget",
     y_col="log_backlog_ratio",
     file_name="experiment6-backlog.png",
-    title="Budget vs. Log Backlog Ratio"
+    title="Budget vs. Log Backlog Ratio",
 )
