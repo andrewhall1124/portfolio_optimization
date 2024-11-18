@@ -122,7 +122,7 @@ results = pd.concat([qp_results, slsqp_results])
 table(
     title="Backlog risk for different optimization benchmarks",
     data=results,
-    precision=8
+    precision=6
     )
 
 qp_results = qp_results[qp_results['method'] != 'qp']
