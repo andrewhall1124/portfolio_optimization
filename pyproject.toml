@@ -21,3 +21,9 @@ dependencies = [
     "tabulate>=0.9.0",
     "yfinance>=0.2.49",
 ]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["research"]
+known_third_party = ["numpy", "pandas", "matplotlib", "seaborn"]
+sections = ["STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
