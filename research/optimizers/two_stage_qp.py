@@ -7,8 +7,10 @@ from research.interfaces import AssetData
 from .qp import qp
 
 
-def two_stage_qp(data: AssetData, gamma: float, budget: float) -> NDArray[np.float64]:
-    optimal_weights = qp(data, gamma, scale_weights=True)
+def two_stage_qp(
+    data: AssetData, gamma: float, budget: float, scale_weights: bool = True
+) -> NDArray[np.float64]:
+    optimal_weights = qp(data, gamma, scale_weights=scale_weights)
     optimal_values = optimal_weights * budget
     n_assets = len(data.names)
 
