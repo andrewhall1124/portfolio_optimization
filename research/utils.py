@@ -37,6 +37,7 @@ def chart(
     file_name: str | None = None,
     title: str | None = None,
     dimensions: tuple[int, int] | None = None,
+    alpha: int = 1,
 ) -> None:
     # Capitalize Variables
     cols = [col for col in [x_col, y_col, z_col] if col]
@@ -52,7 +53,7 @@ def chart(
     # Create Plot
     match type:
         case ChartType.SCATTER:
-            sns.scatterplot(data, x=x_col, y=y_col, hue=z_col)
+            sns.scatterplot(data, x=x_col, y=y_col, hue=z_col, alpha=alpha)
 
         case ChartType.LINE:
             sns.lineplot(data, x=x_col, y=y_col, hue=z_col)

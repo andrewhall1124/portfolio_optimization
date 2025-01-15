@@ -34,7 +34,7 @@ def optimize(
             return two_stage_slsqp(data, weights, budget)
 
         case Optimizer.TWO_STAGE_QP:
-            return two_stage_qp(data, gamma, budget)
+            return two_stage_qp(data, gamma, budget, scale_weights)
 
         case Optimizer.MIQP:
             return miqp(data, gamma, budget)
